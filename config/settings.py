@@ -292,7 +292,12 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     import cloudinary.utils
 
     # PythonAnywhere free accounts reach the internet through this proxy.
-    cloudinary.config(api_proxy='http://proxy.server:3128')
+    # disable_tcp_keep_alive=True makes the SDK use a plain urllib3
+    # ProxyManager; the keep-alive manager does not go through the proxy here.
+    cloudinary.config(
+        api_proxy='http://proxy.server:3128',
+        disable_tcp_keep_alive=True,
+    )
 
     # The SDK builds its HTTP connector when cloudinary.uploader is first
     # imported. Rebuild it now so it picks up the proxy set above.
@@ -301,6 +306,11 @@ if os.environ.get('CLOUDINARY_CLOUD_NAME'):
     try:
         cloudinary.uploader._http = cloudinary.utils.get_http_connector(
             cloudinary.config(), cloudinary.CERT_KWARGS
+        )
+        print(
+            'Cloudinary connector:',
+            type(cloudinary.uploader._http).__name__,
+            file=sys.stderr,
         )
     except Exception as exc:
         print('Cloudinary proxy setup failed:', repr(exc), file=sys.stderr)
