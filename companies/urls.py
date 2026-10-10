@@ -4,6 +4,7 @@ from .views import (
     company_list,
     create_company,
     edit_company,
+    delete_company,
 )
 
 urlpatterns = [
@@ -24,6 +25,12 @@ urlpatterns = [
         '<int:pk>/edit/',
         edit_company,
         name='edit_company'
+    ),
+
+    path(
+        '<int:pk>/delete/',
+        delete_company,
+        name='delete_company'
     ),
 
 ]

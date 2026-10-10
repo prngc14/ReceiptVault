@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}
+Delete Company - ReceiptVault
+{% endblock %}
+
+{% block extra_style %}
+<style>
+    .company-delete-page {
+        width: 100%;
+        max-width: 620px;
+        margin: 60px auto;
+        padding: 30px;
+        border: 1px solid #1c4667;
+        border-radius: 16px;
+        background: #06192a;
+        color: #f8fafc;
+    }
+
+    .company-delete-page h1 {
+        margin: 0 0 14px;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .company-delete-page p {
+        color: #a9c9e6;
+        line-height: 1.6;
+    }
+
+    .company-delete-warning {
+        margin: 18px 0;
+        padding: 13px 15px;
+        border: 1px solid #7f3944;
+        border-radius: 9px;
+        background: rgba(255, 89, 101, 0.10);
+        color: #ffadb3;
+    }
+
+    .company-delete-blocked {
+        border-color: #8a672f;
+        background: rgba(255, 174, 25, 0.10);
+        color: #ffd58a;
+    }
+
+    .company-delete-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .company-delete-actions button,
+    .company-delete-actions a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 18px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+    }
+
+    .company-delete-actions button {
+        background: #d94654;
+        color: #ffffff;
+        cursor: pointer;
+    }
+
+    .company-delete-actions button:hover {
+        background: #c63745;
+    }
+
+    .company-delete-actions a {
+        border-color: #245071;
+        background: #071e32;
+        color: #a9c9e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="company-delete-page">
+    <h1>Delete Company</h1>
+
+    <p>
+        You are about to delete <strong>{{ company.company_name }}</strong>.
+        This cannot be undone.
+    </p>
+
+    {% if receipt_count %}
+        <div class="company-delete-warning company-delete-blocked">
+            This company has {{ receipt_count }} linked receipt(s). To preserve
+            those records, the company cannot be deleted until it has no
+            receipts.
+        </div>
+    {% else %}
+        <div class="company-delete-warning">
+            Confirm deletion of this company. No linked receipts will be
+            deleted.
+        </div>
+    {% endif %}
+
+    <div class="company-delete-actions">
+        {% if not receipt_count %}
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit">Confirm Delete</button>
+            </form>
+        {% endif %}
+        <a href="{% url 'company_list' %}">Back to Companies</a>
+    </div>
+</section>
+{% endblock %}

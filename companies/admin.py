@@ -1,8 +1,8 @@
 from django.contrib import admin
+from django.contrib import messages
 from django.db import transaction
 
 from accounts.audit import describe_changes, log_activity, snapshot_instance
-from receipts.models import Receipt
 from .models import Company
 
 
@@ -43,8 +43,15 @@ class CompanyAdmin(admin.ModelAdmin):
             )
 
     def delete_model(self, request, obj):
+        if obj.receipts.exists():
+            self.message_user(
+                request,
+                'This company cannot be deleted while it has linked receipts.',
+                level=messages.ERROR
+            )
+            return
+
         with transaction.atomic():
-            self._log_related_receipts(request, obj)
             log_activity(
                 request.user,
                 'deleted',
@@ -55,9 +62,19 @@ class CompanyAdmin(admin.ModelAdmin):
             super().delete_model(request, obj)
 
     def delete_queryset(self, request, queryset):
+        if queryset.filter(receipts__isnull=False).exists():
+            self.message_user(
+                request,
+                (
+                    'Selected companies cannot be deleted while any of them '
+                    'have linked receipts.'
+                ),
+                level=messages.ERROR
+            )
+            return
+
         with transaction.atomic():
             for company in queryset.iterator():
-                self._log_related_receipts(request, company)
                 log_activity(
                     request.user,
                     'deleted',
@@ -66,17 +83,3 @@ class CompanyAdmin(admin.ModelAdmin):
                     'Company record deleted.'
                 )
             super().delete_queryset(request, queryset)
-
-    @staticmethod
-    def _log_related_receipts(request, company):
-        receipts = Receipt.objects.filter(company=company).only(
-            'receipt_number'
-        )
-        for receipt in receipts.iterator():
-            log_activity(
-                request.user,
-                'deleted',
-                'receipt',
-                receipt.receipt_number,
-                f'Receipt deleted with company {company.company_name}.'
-            )

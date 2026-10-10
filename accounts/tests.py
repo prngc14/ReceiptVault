@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.contrib import admin
 from django.contrib.auth.models import User
@@ -124,7 +125,7 @@ class AuditLogTests(TestCase):
         self.assertContains(response, 'admin123 updated receipt Receipt #002')
         self.assertNotContains(response, 'Legacy company')
 
-    def test_company_deletion_logs_company_and_cascaded_receipts(self):
+    def test_admin_company_delete_preserves_company_with_receipts(self):
         company = Company.objects.create(company_name='Acme')
         Receipt.objects.create(
             receipt_number='R-CASCADE',
@@ -136,19 +137,17 @@ class AuditLogTests(TestCase):
         request.user = self.admin
         company_admin = admin.site._registry[Company]
 
-        company_admin.delete_model(request, company)
+        with patch.object(company_admin, 'message_user'):
+            company_admin.delete_model(request, company)
 
-        self.assertFalse(Company.objects.filter(pk=company.pk).exists())
-        self.assertTrue(AuditLog.objects.filter(
+        self.assertTrue(Company.objects.filter(pk=company.pk).exists())
+        self.assertTrue(Receipt.objects.filter(
+            receipt_number='R-CASCADE'
+        ).exists())
+        self.assertFalse(AuditLog.objects.filter(
             action='deleted',
             record_type='company',
             record_label='Acme',
-            actor=self.admin,
-        ).exists())
-        self.assertTrue(AuditLog.objects.filter(
-            action='deleted',
-            record_type='receipt',
-            record_label='R-CASCADE',
             actor=self.admin,
         ).exists())
 
