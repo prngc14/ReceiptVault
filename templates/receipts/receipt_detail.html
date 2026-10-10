@@ -1,0 +1,905 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Receipt #{{ receipt.receipt_number }} - ReceiptVault
+{% endblock %}
+
+
+{% block extra_style %}
+
+<style>
+
+    /* ================================================== */
+    /* MAIN RECEIPT CARD */
+    /* ================================================== */
+
+    .receipt-card {
+        border: none;
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+
+    /* ================================================== */
+    /* HEADER */
+    /* ================================================== */
+
+    .receipt-header {
+        background: #123E5A;
+        color: white;
+        padding: 11px 18px;
+    }
+
+
+    .receipt-header h2 {
+        margin: 0;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+
+    .receipt-header small {
+        font-size: 11px;
+        opacity: 0.9;
+    }
+
+
+    /* ================================================== */
+    /* BACK BUTTON */
+    /* ================================================== */
+
+    .back-button {
+        border-radius: 7px;
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+
+    /* ================================================== */
+    /* MAIN ROW */
+    /* ================================================== */
+
+    .receipt-row {
+        align-items: stretch;
+    }
+
+
+    /* ================================================== */
+    /* INFORMATION CARD */
+    /* ================================================== */
+
+    .receipt-info-card {
+        border: none;
+        border-radius: 11px;
+        background: #f8f9fa;
+        height: 100%;
+    }
+
+
+    .receipt-info-card .card-body {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    .receipt-info-title {
+        color: #123E5A;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+
+    /* ================================================== */
+    /* INFORMATION GRID */
+    /* ================================================== */
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 12px;
+    }
+
+
+    .info-item {
+        padding: 3px 0;
+        border-bottom: 1px solid #e1e4e7;
+        min-width: 0;
+    }
+
+
+    .info-label {
+        color: #6c757d;
+        font-size: 9px;
+        font-weight: 600;
+        line-height: 1.1;
+        margin-bottom: 1px;
+    }
+
+
+    .info-value {
+        color: #212529;
+        font-size: 11px;
+        font-weight: 500;
+        line-height: 1.15;
+        word-break: break-word;
+    }
+
+
+    /* ================================================== */
+    /* PAYMENT SUMMARY */
+    /* UNDER AMOUNT PAID */
+    /* ================================================== */
+
+    .payment-summary {
+        margin-top: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+    }
+
+
+    .payment-box {
+        width: 155px;
+        height: 24px;
+        padding: 3px 7px;
+        border-radius: 6px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        box-sizing: border-box;
+    }
+
+
+    /* ================================================== */
+    /* BALANCE - RED */
+    /* ================================================== */
+
+    .balance-box {
+        background: #f8d7da;
+        color: #842029;
+        border: 1px solid #f1b0b7;
+    }
+
+
+    .balance-label {
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+
+    .balance-value {
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+
+    /* ================================================== */
+    /* TOTAL AMOUNT - BLUE */
+    /* ================================================== */
+
+    .total-box {
+        background: #123E5A;
+        color: white;
+    }
+
+
+    .total-label {
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+
+    .total-value {
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+
+    /* ================================================== */
+    /* REMARKS */
+    /* ================================================== */
+
+    .remarks-box {
+        margin-top: 5px;
+        padding-top: 4px;
+        border-top: 1px solid #e1e4e7;
+    }
+
+
+    .remarks-label {
+        color: #6c757d;
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+
+    .remarks-value {
+        font-size: 11px;
+        line-height: 1.15;
+        word-break: break-word;
+    }
+
+
+    /* ================================================== */
+    /* EDIT / DELETE */
+    /* VERY SMALL */
+    /* ================================================== */
+
+    .receipt-actions {
+        display: flex;
+        gap: 4px;
+        margin-top: 6px;
+        padding-top: 5px;
+        border-top: 1px solid #e1e4e7;
+    }
+
+
+    .action-button {
+        border: none;
+        border-radius: 5px;
+        font-size: 9px;
+        font-weight: 600;
+        padding: 3px 7px;
+        line-height: 1.1;
+    }
+
+
+    /* EDIT = GREEN */
+
+    .edit-button {
+        background: #198754;
+        color: white;
+    }
+
+
+    .edit-button:hover {
+        background: #157347;
+        color: white;
+    }
+
+
+    /* DELETE = RED */
+
+    .delete-button {
+        background: #dc3545;
+        color: white;
+    }
+
+
+    .delete-button:hover {
+        background: #bb2d3b;
+        color: white;
+    }
+
+
+    /* ================================================== */
+    /* IMAGE CONTAINER */
+    /* ================================================== */
+
+    .receipt-image-container {
+        background: #f8f9fa;
+        border-radius: 11px;
+        padding: 7px;
+        text-align: center;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+
+    .receipt-image {
+        width: 100%;
+        max-height: 475px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: white;
+    }
+
+
+    .image-caption {
+        font-size: 9px;
+        margin-top: 3px;
+    }
+
+
+    /* ================================================== */
+    /* NO IMAGE */
+    /* ================================================== */
+
+    .no-image {
+        height: 300px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        color: #6c757d;
+    }
+
+
+    .no-image-icon {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+
+    /* ================================================== */
+    /* MOBILE */
+    /* ================================================== */
+
+    @media (max-width: 991px) {
+
+        .receipt-info-card {
+            height: auto;
+        }
+
+
+        .receipt-image-container {
+            height: auto;
+        }
+
+
+        .receipt-image {
+            max-height: 500px;
+        }
+
+    }
+
+
+    @media (max-width: 576px) {
+
+        .receipt-header {
+            padding: 10px 14px;
+        }
+
+
+        .receipt-header h2 {
+            font-size: 20px;
+        }
+
+
+        .info-grid {
+            grid-template-columns: 1fr 1fr;
+            column-gap: 8px;
+        }
+
+
+        .info-label {
+            font-size: 8px;
+        }
+
+
+        .info-value {
+            font-size: 10px;
+        }
+
+
+        .payment-box {
+            width: 145px;
+        }
+
+
+        .action-button {
+            font-size: 8px;
+            padding: 3px 6px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ================================================== -->
+<!-- BACK -->
+<!-- ================================================== -->
+
+<div class="mb-2">
+
+    <a
+        href="{% url 'search_receipts' %}"
+        class="btn btn-secondary back-button"
+    >
+        ← Back to Receipts
+    </a>
+
+</div>
+
+
+<!-- ================================================== -->
+<!-- RECEIPT CARD -->
+<!-- ================================================== -->
+
+<div class="card shadow-lg receipt-card">
+
+
+    <!-- ================================================== -->
+    <!-- HEADER -->
+    <!-- ================================================== -->
+
+    <div class="receipt-header">
+
+        <h2>
+            Receipt #{{ receipt.receipt_number }}
+        </h2>
+
+
+        {% if receipt.reference_number %}
+
+            <small>
+                Reference: {{ receipt.reference_number }}
+            </small>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- BODY -->
+    <!-- ================================================== -->
+
+    <div class="card-body p-2">
+
+
+        <div class="row g-2 receipt-row">
+
+
+            <!-- ================================================== -->
+            <!-- RECEIPT INFORMATION -->
+            <!-- ================================================== -->
+
+            <div class="col-lg-5">
+
+                <div class="card receipt-info-card shadow-sm">
+
+                    <div class="card-body">
+
+
+                        <!-- TITLE -->
+
+                        <div class="receipt-info-title">
+                            Receipt Information
+                        </div>
+
+
+                        <!-- ================================================== -->
+                        <!-- INFORMATION -->
+                        <!-- ================================================== -->
+
+                        <div class="info-grid">
+
+
+                            <!-- COMPANY -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Company
+                                </div>
+
+                                <div class="info-value">
+                                    {{ receipt.company.company_name }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- RECEIPT NUMBER -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Receipt Number
+                                </div>
+
+                                <div class="info-value">
+                                    {{ receipt.receipt_number }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- REFERENCE -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Reference Number
+                                </div>
+
+                                <div class="info-value">
+
+                                    {% if receipt.reference_number %}
+                                        {{ receipt.reference_number }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Not provided
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- DATE -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Receipt Date
+                                </div>
+
+                                <div class="info-value">
+                                    {{ receipt.receipt_date }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- ITEM -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Item Name
+                                </div>
+
+                                <div class="info-value">
+
+                                    {% if receipt.item_name %}
+                                        {{ receipt.item_name }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Not provided
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- QUANTITY -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Quantity
+                                </div>
+
+                                <div class="info-value">
+                                    {{ receipt.quantity }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- UNIT PRICE -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Unit Price
+                                </div>
+
+                                <div class="info-value">
+                                    ₱{{ receipt.unit_price|floatformat:2 }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- SUBTOTAL -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Subtotal
+                                </div>
+
+                                <div class="info-value">
+                                    ₱{{ receipt.subtotal|floatformat:2 }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- DISCOUNT -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Discount
+                                </div>
+
+                                <div class="info-value">
+                                    ₱{{ receipt.discount|floatformat:2 }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- TAX -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Tax
+                                </div>
+
+                                <div class="info-value">
+                                    ₱{{ receipt.tax|floatformat:2 }}
+                                </div>
+
+                            </div>
+
+
+                            <!-- PAYMENT METHOD -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Payment Method
+                                </div>
+
+                                <div class="info-value">
+
+                                    {% if receipt.payment_method %}
+                                        {{ receipt.payment_method }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Not provided
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- CASHIER -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Cashier
+                                </div>
+
+                                <div class="info-value">
+
+                                    {% if receipt.cashier %}
+                                        {{ receipt.cashier }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Not provided
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- CREATED BY -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Created By
+                                </div>
+
+                                <div class="info-value">
+
+                                    {% if receipt.created_by %}
+                                        {{ receipt.created_by.username }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Unknown
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- AMOUNT PAID -->
+
+                            <div class="info-item">
+
+                                <div class="info-label">
+                                    Amount Paid
+                                </div>
+
+                                <div class="info-value">
+                                    ₱{{ receipt.amount_paid|floatformat:2 }}
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- ================================================== -->
+                        <!-- BALANCE + TOTAL -->
+                        <!-- RIGHT UNDER AMOUNT PAID -->
+                        <!-- ================================================== -->
+
+                        <div class="payment-summary">
+
+
+                            <!-- BALANCE -->
+
+                            <div class="payment-box balance-box">
+
+                                <span class="balance-label">
+                                    Balance
+                                </span>
+
+                                <span class="balance-value">
+                                    ₱{{ receipt.balance|floatformat:2 }}
+                                </span>
+
+                            </div>
+
+
+                            <!-- TOTAL -->
+
+                            <div class="payment-box total-box">
+
+                                <span class="total-label">
+                                    Total Amount
+                                </span>
+
+                                <span class="total-value">
+                                    ₱{{ receipt.total_amount|floatformat:2 }}
+                                </span>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- ================================================== -->
+                        <!-- REMARKS -->
+                        <!-- ================================================== -->
+
+                        {% if receipt.remarks %}
+
+                            <div class="remarks-box">
+
+                                <div class="remarks-label">
+                                    Remarks
+                                </div>
+
+                                <div class="remarks-value">
+                                    {{ receipt.remarks }}
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <!-- ================================================== -->
+                        <!-- EDIT / DELETE -->
+                        <!-- VERY SMALL -->
+                        <!-- ================================================== -->
+
+                        <div class="receipt-actions">
+
+
+                            <a
+                                href="{% url 'update_receipt' receipt.pk %}"
+                                class="btn action-button edit-button"
+                            >
+                                Edit Receipt
+                            </a>
+
+
+                            <a
+                                href="{% url 'delete_receipt' receipt.pk %}"
+                                class="btn action-button delete-button"
+                            >
+                                Delete Receipt
+                            </a>
+
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ================================================== -->
+            <!-- RECEIPT IMAGE -->
+            <!-- ================================================== -->
+
+            <div class="col-lg-7">
+
+                <div class="receipt-image-container shadow-sm">
+
+
+                    {% if receipt.receipt_image %}
+
+
+                        <a
+                            href="{{ receipt.receipt_image.url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+
+                            <img
+                                src="{{ receipt.receipt_image.url }}"
+                                class="receipt-image shadow"
+                                alt="Receipt {{ receipt.receipt_number }}"
+                            >
+
+                        </a>
+
+
+                        <div class="image-caption text-muted">
+
+                            Click image to view full size
+
+                        </div>
+
+
+                    {% else %}
+
+
+                        <div class="no-image">
+
+                            <div class="no-image-icon">
+                                🧾
+                            </div>
+
+                            <h6>
+                                No Receipt Image
+                            </h6>
+
+                            <p class="mb-0 small">
+                                No receipt image has been uploaded.
+                            </p>
+
+                        </div>
+
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

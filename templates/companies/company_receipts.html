@@ -1,0 +1,613 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ company.company_name }} - ReceiptVault
+{% endblock %}
+
+
+{% block extra_style %}
+
+<style>
+
+    /* ===================================== */
+    /* BACK BUTTON */
+    /* ===================================== */
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 0 18px;
+        border-radius: 9px;
+        border: 1px solid #245071;
+        background: #071e32;
+        color: #a9c9e6;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.18s ease;
+    }
+
+    .back-button:hover {
+        background: #0a2740;
+        color: #ffffff;
+        border-color: #35698f;
+    }
+
+
+    /* ===================================== */
+    /* COMPANY HEADER */
+    /* ===================================== */
+
+    .company-header {
+        background:
+            linear-gradient(
+                145deg,
+                #071b2d 0%,
+                #061725 100%
+            );
+        border: 1px solid #173f60;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+    }
+
+
+    .company-header-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 16px;
+        background: rgba(22, 135, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+    }
+
+
+    .company-title {
+        color: #ffffff;
+        font-size: 26px;
+        font-weight: 800;
+    }
+
+
+    /* ===================================== */
+    /* COMPANY INFO */
+    /* ===================================== */
+
+    .info-box {
+        background: #06192a;
+        border: 1px solid #1c4667;
+        border-radius: 14px;
+        padding: 18px;
+        height: 100%;
+    }
+
+
+    .info-title {
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 800;
+        margin-bottom: 14px;
+    }
+
+
+    .info-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 9px;
+        font-size: 13px;
+    }
+
+
+    .info-row:last-child {
+        margin-bottom: 0;
+    }
+
+
+    .info-label {
+        font-weight: 700;
+        color: #dcecff;
+        min-width: 120px;
+    }
+
+
+    .info-value {
+        color: #79a9d0;
+        word-break: break-word;
+    }
+
+
+    /* ===================================== */
+    /* RECEIPT CARD */
+    /* ===================================== */
+
+    .receipt-card {
+        border: 1px solid #1c4667;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #06192a;
+        transition: transform 0.18s ease, border-color 0.18s ease;
+    }
+
+
+    .receipt-card:hover {
+        transform: translateY(-3px);
+        border-color: #2b6a95;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22) !important;
+    }
+
+
+    .receipt-image {
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+    }
+
+
+    .no-image {
+        height: 190px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #071f33;
+        color: #557896;
+        font-weight: 700;
+    }
+
+
+    .receipt-number {
+        color: #ffffff;
+        font-size: 17px;
+        font-weight: 800;
+    }
+
+
+    .receipt-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 5px 0;
+        font-size: 13px;
+    }
+
+
+    .receipt-row strong {
+        color: #dcecff;
+    }
+
+
+    .receipt-row span {
+        text-align: right;
+        color: #79a9d0;
+    }
+
+
+    .receipt-total {
+        font-size: 15px;
+        font-weight: 800;
+        color: #55aaff;
+        padding-top: 9px;
+        border-top: 1px solid #1c4667;
+        margin-top: 6px;
+    }
+
+    .receipt-total span {
+        color: #55aaff;
+    }
+
+
+    .view-receipt-btn {
+        width: 100%;
+        min-height: 38px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #12d9b2, #0eb595);
+        color: #06192a;
+        font-size: 13px;
+        font-weight: 700;
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .view-receipt-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(18, 217, 178, 0.28);
+        color: #06192a;
+    }
+
+
+    /* ===================================== */
+    /* RECEIPTS HEADER */
+    /* ===================================== */
+
+    .receipts-section-title {
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    .receipts-section-sub {
+        color: #79a9d0;
+    }
+
+
+    .btn-add-receipt {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #1687ff, #126be5);
+        color: #ffffff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        box-shadow: 0 8px 18px rgba(0, 119, 255, 0.18);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .btn-add-receipt:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(0, 119, 255, 0.28);
+    }
+
+
+    /* ===================================== */
+    /* EMPTY */
+    /* ===================================== */
+
+    .empty-state {
+        padding: 55px 20px;
+        text-align: center;
+        background: #06192a;
+        border: 1px solid #1c4667;
+        border-radius: 18px;
+    }
+
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 14px;
+    }
+
+
+    .empty-state h4 {
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .empty-state p {
+        color: #79a9d0;
+    }
+
+
+    /* ===================================== */
+    /* MOBILE */
+    /* ===================================== */
+
+    @media (max-width: 576px) {
+
+        .company-title {
+            font-size: 22px;
+        }
+
+        .info-row {
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .info-label {
+            min-width: unset;
+        }
+
+        .receipt-row {
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .receipt-row span {
+            text-align: left;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+
+<!-- ===================================== -->
+<!-- BACK -->
+<!-- ===================================== -->
+
+<div class="mb-4">
+
+    <a href="{% url 'search_receipts' %}" class="back-button">← Back to Companies</a>
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- COMPANY HEADER -->
+<!-- ===================================== -->
+
+<div class="company-header mb-4">
+
+    <div class="p-4 p-md-5">
+
+        <div class="d-flex align-items-center justify-content-center gap-3 text-center">
+
+            <div class="company-header-icon">🏢</div>
+
+            <div class="text-start">
+                <div class="company-title">{{ company.company_name }}</div>
+                <div style="color:#79a9d0;">Company Receipts</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- COMPANY INFORMATION -->
+<!-- ===================================== -->
+
+<div class="row g-4 mb-5">
+
+
+    <!-- BASIC INFORMATION -->
+
+    <div class="col-md-6">
+
+        <div class="info-box">
+
+            <div class="info-title">🏢 Company Information</div>
+
+            <div class="info-row">
+                <div class="info-label">Company Name:</div>
+                <div class="info-value">{{ company.company_name }}</div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Address:</div>
+                <div class="info-value">
+
+                    {% if company.address %}
+                        {{ company.address }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CONTACT INFORMATION -->
+
+    <div class="col-md-6">
+
+        <div class="info-box">
+
+            <div class="info-title">📞 Contact Information</div>
+
+            <div class="info-row">
+                <div class="info-label">Contact Person:</div>
+                <div class="info-value">
+
+                    {% if company.contact_person %}
+                        {{ company.contact_person }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Contact Number:</div>
+                <div class="info-value">
+
+                    {% if company.contact_number %}
+                        {{ company.contact_number }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Email:</div>
+                <div class="info-value">
+
+                    {% if company.email %}
+                        {{ company.email }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- RECEIPTS HEADER -->
+<!-- ===================================== -->
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h2 class="receipts-section-title mb-1">🧾 Receipts</h2>
+        <p class="receipts-section-sub mb-0">All receipts for {{ company.company_name }}</p>
+    </div>
+
+    <a href="{% url 'create_receipt' %}" class="btn-add-receipt">+ Add Receipt</a>
+
+</div>
+
+
+<!-- ===================================== -->
+<!-- RECEIPTS -->
+<!-- ===================================== -->
+
+<div class="row g-4">
+
+
+    {% for receipt in receipts %}
+
+        <div class="col-md-6 col-xl-4">
+
+            <div class="card shadow-sm receipt-card h-100">
+
+
+                <!-- RECEIPT IMAGE -->
+
+                {% if receipt.receipt_image %}
+
+                    <a href="{% url 'receipt_detail' receipt.pk %}">
+                        <img src="{{ receipt.receipt_image.url }}" class="receipt-image" alt="Receipt">
+                    </a>
+
+                {% else %}
+
+                    <div class="no-image">🧾 No Receipt Image</div>
+
+                {% endif %}
+
+
+                <div class="card-body p-4">
+
+
+                    <!-- RECEIPT NUMBER -->
+
+                    <div class="receipt-number mb-3">Receipt #{{ receipt.receipt_number }}</div>
+
+
+                    <!-- REFERENCE -->
+
+                    <div class="receipt-row">
+                        <strong>Reference:</strong>
+                        <span>
+                            {% if receipt.reference_number %}
+                                {{ receipt.reference_number }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </span>
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="receipt-row">
+                        <strong>Date:</strong>
+                        <span>{{ receipt.receipt_date|date:"M. d, Y" }}</span>
+                    </div>
+
+
+                    <!-- ITEM -->
+
+                    {% if receipt.item_name %}
+
+                        <div class="receipt-row">
+                            <strong>Item:</strong>
+                            <span>{{ receipt.item_name }}</span>
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- PAYMENT METHOD -->
+
+                    {% if receipt.payment_method %}
+
+                        <div class="receipt-row">
+                            <strong>Payment:</strong>
+                            <span>{{ receipt.payment_method }}</span>
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- CREATED BY -->
+
+                    <div class="receipt-row">
+                        <strong>Created by:</strong>
+                        <span>
+                            {% if receipt.created_by %}
+                                {{ receipt.created_by.username }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </span>
+                    </div>
+
+
+                    <!-- TOTAL -->
+
+                    <div class="receipt-row receipt-total">
+                        <strong>Total:</strong>
+                        <span>₱{{ receipt.total_amount|floatformat:2 }}</span>
+                    </div>
+
+
+                    <!-- ACTION -->
+
+                    <div class="mt-3">
+                        <a href="{% url 'receipt_detail' receipt.pk %}" class="btn view-receipt-btn">View Receipt</a>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    {% empty %}
+
+        <div class="col-12">
+
+            <div class="empty-state">
+
+                <div class="empty-state-icon">🧾</div>
+
+                <h4>No receipts yet</h4>
+
+                <p class="mb-4">There are no receipts recorded for this company.</p>
+
+                <a href="{% url 'create_receipt' %}" class="btn-add-receipt">+ Add First Receipt</a>
+
+            </div>
+
+        </div>
+
+    {% endfor %}
+
+
+</div>
+
+
+{% endblock %}

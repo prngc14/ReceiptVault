@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Delete Receipt - ReceiptVault
+{% endblock %}
+
+{% block extra_style %}
+
+<style>
+    .delete-container {
+        max-width: 700px;
+        margin: 50px auto 0;
+    }
+
+    .delete-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .delete-header {
+        background: #dc3545;
+        color: white;
+        padding: 20px 25px;
+    }
+
+    .delete-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .delete-body {
+        padding: 30px;
+    }
+
+    .receipt-number {
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .delete-warning {
+        background: #fff3cd;
+        border: 1px solid #ffecb5;
+        color: #664d03;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 25px;
+    }
+
+    .btn-delete {
+        border-radius: 10px;
+        font-weight: 600;
+        padding: 10px 20px;
+    }
+
+    .btn-cancel {
+        border-radius: 10px;
+        font-weight: 500;
+        padding: 10px 20px;
+    }
+
+    .back-button-container {
+        max-width: 700px;
+        margin: 25px auto 0;
+    }
+
+    .back-button {
+        border-radius: 10px;
+        font-weight: 500;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Back Button -->
+<div class="back-button-container">
+
+    <button
+        type="button"
+        class="btn btn-outline-secondary back-button"
+        onclick="history.back()">
+
+        ← Back
+
+    </button>
+
+</div>
+
+
+<!-- Delete Confirmation -->
+<div class="delete-container">
+
+    <div class="card shadow delete-card">
+
+        <!-- Header -->
+        <div class="delete-header">
+
+            <h2>
+                Delete Receipt
+            </h2>
+
+        </div>
+
+
+        <!-- Body -->
+        <div class="delete-body">
+
+            <div class="delete-warning">
+
+                <strong>Warning:</strong>
+                This action cannot be undone.
+
+            </div>
+
+
+            <p class="fs-5">
+
+                Are you sure you want to delete
+
+                <span class="receipt-number">
+                    {{ receipt.receipt_number }}
+                </span>?
+
+            </p>
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <button
+                    type="submit"
+                    class="btn btn-danger btn-delete">
+
+                    Delete
+
+                </button>
+
+
+                <a
+                    href="{% url 'receipt_detail' receipt.pk %}"
+                    class="btn btn-secondary btn-cancel">
+
+                    Cancel
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

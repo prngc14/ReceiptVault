@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ page_title }} - ReceiptVault
+{% endblock %}
+
+{% block extra_style %}
+<style>
+
+.flagged-page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.flagged-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.flagged-header h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.flagged-header p {
+    margin: 6px 0 0;
+    color: #83b0d7;
+    font-size: 13px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 18px;
+    border-radius: 9px;
+    border: 1px solid #245071;
+    background: #071e32;
+    color: #a9c9e6;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: 0.18s ease;
+}
+
+.back-link:hover {
+    background: #0a2740;
+    color: #ffffff;
+    border-color: #35698f;
+}
+
+.flagged-card {
+    background: #06192a;
+    border: 1px solid #1c4667;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.flagged-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 1px solid #173b57;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.flagged-item:last-child {
+    border-bottom: none;
+}
+
+.flagged-item:hover {
+    background: #0a2740;
+}
+
+.flagged-left .flagged-title {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.flagged-left .flagged-sub {
+    color: #79a9d0;
+    font-size: 12px;
+}
+
+.flagged-amount {
+    color: #ffae19;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.flagged-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: #79a9d0;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="flagged-page">
+
+    <div class="flagged-header">
+
+        <div>
+            <h1>{{ page_title }}</h1>
+            <p>{{ page_subtitle }}</p>
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    </div>
+
+
+    <div class="flagged-card">
+
+        {% for receipt in receipts %}
+
+            <a href="{% url 'receipt_detail' receipt.pk %}" class="flagged-item">
+
+                <div class="flagged-left">
+                    <div class="flagged-title">{{ receipt.receipt_number }} — {{ receipt.company.company_name }}</div>
+                    <div class="flagged-sub">{{ receipt.receipt_date }}</div>
+                </div>
+
+                <div class="flagged-amount">₱{{ receipt.total_amount|floatformat:2 }}</div>
+
+            </a>
+
+        {% empty %}
+
+            <div class="flagged-empty">Nothing to show here.</div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

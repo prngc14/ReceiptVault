@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            ReceiptVault
+        {% endblock %}
+    </title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            background: #020914;
+            color: #f8fafc;
+            font-family: Arial, Helvetica, sans-serif;
+
+            /* IMPORTANT:
+               huwag hayaang mag-scroll ang buong browser page */
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           MAIN APP
+           ===================================================== */
+
+        .app-layout {
+            display: flex;
+
+            width: 100%;
+            height: 100vh;
+            min-height: 100vh;
+
+            background: #020914;
+
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+           ===================================================== */
+
+        .app-sidebar {
+            width: 304px;
+            min-width: 304px;
+
+            height: 100vh;
+            min-height: 100vh;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #061b2d 0%,
+                    #031321 45%,
+                    #020b16 100%
+                );
+
+            border-right: 1px solid #173956;
+
+            padding: 42px 24px 28px;
+
+            display: flex;
+            flex-direction: column;
+
+            position: fixed;
+
+            left: 0;
+            top: 0;
+            bottom: 0;
+
+            z-index: 1000;
+
+            /* SIDEBAR ITSELF DOES NOT SCROLL */
+            overflow: hidden;
+        }
+
+
+        /* =====================================================
+           LOGO
+           ===================================================== */
+
+        .sidebar-logo {
+            margin-left: 12px;
+            margin-bottom: 4px;
+
+            font-size: 30px;
+            line-height: 1.1;
+
+            font-weight: 800;
+
+            letter-spacing: -1px;
+
+            flex-shrink: 0;
+        }
+
+        .sidebar-logo .logo-white {
+            color: #ffffff;
+        }
+
+        .sidebar-logo .logo-blue {
+            color: #1687ff;
+        }
+
+        .sidebar-tagline {
+            margin-left: 12px;
+            margin-bottom: 36px;
+
+            color: #72a8d8;
+
+            font-size: 14px;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================================
+           SIDEBAR NAVIGATION
+           ===================================================== */
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+
+            gap: 8px;
+
+            flex-shrink: 0;
+        }
+
+        .sidebar-link {
+            width: 100%;
+            min-height: 66px;
+
+            padding: 0 22px;
+
+            display: flex;
+            align-items: center;
+
+            gap: 20px;
+
+            border-radius: 12px;
+
+            text-decoration: none;
+
+            color: #dcecff;
+
+            font-size: 17px;
+            font-weight: 500;
+
+            transition:
+                background 0.18s ease,
+                color 0.18s ease,
+                transform 0.18s ease;
+
+            flex-shrink: 0;
+        }
+
+        .sidebar-link:hover {
+            background: #0a2740;
+            color: #ffffff;
+        }
+
+        .sidebar-link.active {
+            background:
+                linear-gradient(
+                    135deg,
+                    #1687ff,
+                    #126be5
+                );
+
+            color: #ffffff;
+
+            box-shadow:
+                0 10px 25px rgba(0, 119, 255, 0.20);
+        }
+
+        .sidebar-icon {
+            width: 22px;
+            min-width: 22px;
+
+            text-align: center;
+
+            font-size: 18px;
+
+            line-height: 1;
+        }
+
+
+        /* =====================================================
+           DIVIDER
+           ===================================================== */
+
+        .sidebar-divider {
+            height: 1px;
+
+            margin: 20px 4px 20px;
+
+            background: #173956;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================================
+           SECURE CARD
+           ===================================================== */
+
+        .secure-card {
+            width: 100%;
+
+            min-height: 44px;
+
+            padding: 8px 12px;
+
+            border: 1px solid #215273;
+
+            border-radius: 10px;
+
+            background: #071e32;
+
+            display: flex;
+            align-items: center;
+
+            gap: 9px;
+
+            flex-shrink: 0;
+        }
+
+        .secure-icon {
+            width: 18px;
+            height: 18px;
+
+            min-width: 18px;
+
+            border-radius: 5px;
+
+            background: #087cf2;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #ffffff;
+
+            font-size: 10px;
+            font-weight: 400;
+
+            flex-shrink: 0;
+        }
+
+        .secure-text {
+            color: #ffffff;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           LOGOUT
+           ===================================================== */
+
+        .sidebar-logout {
+            margin-top: 6px;
+
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+           ===================================================== */
+
+        .app-main {
+            width: calc(100% - 304px);
+
+            min-width: 0;
+
+            margin-left: 304px;
+
+            height: 100vh;
+            min-height: 100vh;
+
+            background: #020914;
+
+            padding: 0;
+
+            /* ONLY MAIN CONTENT CAN SCROLL */
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+
+        /* =====================================================
+           PAGE CONTENT
+           ===================================================== */
+
+        .page-content {
+            width: 100%;
+
+            min-height: 100%;
+
+            padding: 42px 42px 50px;
+        }
+
+
+        /* =====================================================
+           REMOVE BOOTSTRAP CONTAINER SPACE
+           ===================================================== */
+
+        .page-content > .container,
+        .page-content > .container-fluid {
+
+            max-width: none !important;
+
+            width: 100% !important;
+
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+
+        /* =====================================================
+           MOBILE / SMALL SCREEN
+           ===================================================== */
+
+        @media (max-width: 1100px) {
+
+            .app-sidebar {
+                width: 250px;
+                min-width: 250px;
+
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .app-main {
+                width: calc(100% - 250px);
+
+                margin-left: 250px;
+            }
+
+            .sidebar-logo {
+                font-size: 26px;
+            }
+
+            .sidebar-link {
+                min-height: 58px;
+
+                font-size: 16px;
+            }
+
+            .secure-text {
+                font-size: 12px;
+            }
+        }
+
+
+        @media (max-width: 768px) {
+
+            .app-sidebar {
+                position: fixed;
+
+                width: 220px;
+                min-width: 220px;
+
+                height: 100vh;
+            }
+
+            .app-main {
+                width: calc(100% - 220px);
+
+                margin-left: 220px;
+
+                height: 100vh;
+            }
+
+            .page-content {
+                padding: 28px 22px 40px;
+            }
+        }
+
+    </style>
+
+    {% block extra_style %}
+    {% endblock %}
+
+</head>
+
+
+<body>
+
+<div class="app-layout">
+
+
+    <!-- =====================================================
+         FIXED SIDEBAR
+         ===================================================== -->
+
+    <aside class="app-sidebar">
+
+
+        <!-- LOGO -->
+
+        <div class="sidebar-logo">
+            <span class="logo-white">Receipt</span><span class="logo-blue">Vault</span>
+        </div>
+
+
+        <div class="sidebar-tagline">
+            Manage. Track. Grow.
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <nav class="sidebar-nav">
+
+            {% if request.user.is_authenticated %}
+
+
+                <!-- DASHBOARD -->
+
+                {% if request.user.is_staff %}
+
+                    <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"><span class="sidebar-icon">⌂</span><span>Dashboard</span></a>
+
+                {% else %}
+
+                    <a href="{% url 'staff_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %}"><span class="sidebar-icon">⌂</span><span>Dashboard</span></a>
+
+                {% endif %}
+
+
+                <!-- COMPANIES -->
+
+                <a href="{% url 'company_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'company_list' or request.resolver_match.url_name == 'create_company' %}active{% endif %}"><span class="sidebar-icon">▦</span><span>Companies</span></a>
+
+
+                <!-- RECEIPTS -->
+
+                <a href="{% url 'search_receipts' %}" class="sidebar-link {% if request.resolver_match.url_name == 'search_receipts' or request.resolver_match.url_name == 'company_receipts' or request.resolver_match.url_name == 'receipt_detail' or request.resolver_match.url_name == 'update_receipt' or request.resolver_match.url_name == 'delete_receipt' %}active{% endif %}"><span class="sidebar-icon">▤</span><span>Receipts</span></a>
+
+
+                <!-- ADD RECEIPT -->
+
+                <a href="{% url 'create_receipt' %}" class="sidebar-link {% if request.resolver_match.url_name == 'create_receipt' %}active{% endif %}"><span class="sidebar-icon">+</span><span>Add Receipt</span></a>
+
+
+            {% endif %}
+
+        </nav>
+
+
+        <!-- DIVIDER -->
+
+        <div class="sidebar-divider"></div>
+
+
+        <!-- SECURE CARD -->
+
+        <div class="secure-card">
+            <div class="secure-icon">✓</div>
+            <div class="secure-text">Keep your records secure</div>
+        </div>
+
+
+        <!-- LOGOUT -->
+
+        {% if request.user.is_authenticated %}
+
+            <a href="{% url 'logout' %}" class="sidebar-link sidebar-logout"><span class="sidebar-icon">⇥</span><span>Logout</span></a>
+
+        {% endif %}
+
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="app-main">
+
+        <div class="page-content">
+
+            {% block content %}
+            {% endblock %}
+
+        </div>
+
+    </main>
+
+
+</div>
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+
+</html>

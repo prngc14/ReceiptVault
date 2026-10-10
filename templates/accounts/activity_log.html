@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}
+Activity Log - ReceiptVault
+{% endblock %}
+
+{% block extra_style %}
+<style>
+
+.activity-log-page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.activity-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.activity-log-header h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.activity-log-header p {
+    margin: 6px 0 0;
+    color: #83b0d7;
+    font-size: 13px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 0 18px;
+    border-radius: 9px;
+    border: 1px solid #245071;
+    background: #071e32;
+    color: #a9c9e6;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.18s ease;
+    white-space: nowrap;
+}
+
+.back-link:hover {
+    background: #0a2740;
+    color: #ffffff;
+    border-color: #35698f;
+}
+
+.activity-log-card {
+    background: #06192a;
+    border: 1px solid #1c4667;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.log-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 22px;
+    border-bottom: 1px solid #173b57;
+}
+
+.log-item:last-child {
+    border-bottom: none;
+}
+
+.log-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 13px;
+    min-width: 0;
+}
+
+.log-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+}
+
+.log-icon.receipt-bg {
+    background: rgba(18, 217, 178, 0.16);
+    color: #12d9b2;
+}
+
+.log-icon.company-bg {
+    background: rgba(22, 135, 255, 0.16);
+    color: #4ba2ff;
+}
+
+.log-title {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.log-subtitle {
+    color: #79a9d0;
+    font-size: 12px;
+}
+
+.log-time {
+    color: #5f8fb8;
+    font-size: 11px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    padding-top: 3px;
+}
+
+.log-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: #79a9d0;
+}
+
+@media (max-width: 700px) {
+
+    .activity-log-header h1 {
+        font-size: 23px;
+    }
+
+    .log-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .log-time {
+        padding-top: 0;
+    }
+
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="activity-log-page">
+
+    <div class="activity-log-header">
+
+        <div>
+            <h1>Activity Log</h1>
+            <p>Full history of receipts and companies added to the system.</p>
+        </div>
+
+        <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    </div>
+
+
+    <div class="activity-log-card">
+
+        {% for item in activity %}
+
+            <div class="log-item">
+
+                <div class="log-left">
+
+                    <div class="log-icon {{ item.icon_class }}">{{ item.icon }}</div>
+
+                    <div>
+                        <div class="log-title">{{ item.title }}</div>
+                        <div class="log-subtitle">{{ item.subtitle }}</div>
+                    </div>
+
+                </div>
+
+                <div class="log-time">{{ item.timestamp|date:"M j, Y" }} · {{ item.timestamp|time:"g:i A" }}</div>
+
+            </div>
+
+        {% empty %}
+
+            <div class="log-empty">
+                No activity recorded yet.
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

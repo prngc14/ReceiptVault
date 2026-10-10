@@ -1,0 +1,1201 @@
+{% extends "base.html" %}
+
+{% block title %}
+Staff Dashboard - ReceiptVault
+{% endblock %}
+
+{% block extra_style %}
+
+<style>
+
+/* =========================================================
+   FIXED DASHBOARD LAYOUT
+   ========================================================= */
+
+html,
+body {
+    overflow: hidden !important;
+}
+
+.app-layout {
+    width: 100%;
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.app-main {
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.page-content {
+    height: 100vh !important;
+    min-height: 0 !important;
+    padding: 22px 30px 20px !important;
+    overflow: hidden !important;
+}
+
+.staff-dashboard-page {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.staff-topbar {
+    width: 100%;
+    flex: 0 0 auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 25px;
+}
+
+
+/* SEARCH */
+
+.staff-search {
+    width: min(700px, 100%);
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+
+    background: #06192a;
+    border: 1px solid #1b4b70;
+    border-radius: 11px;
+
+    padding: 3px;
+}
+
+.staff-search-icon {
+    width: 41px;
+    min-width: 41px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #55aaff;
+    font-size: 18px;
+}
+
+.staff-search input {
+    flex: 1;
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #ffffff;
+    font-size: 14px;
+
+    padding: 9px 7px;
+}
+
+.staff-search input::placeholder {
+    color: #79a5ca;
+}
+
+.staff-search input:-webkit-autofill,
+.staff-search input:-webkit-autofill:hover,
+.staff-search input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0 1000px #06192a inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.staff-search button {
+    height: 36px;
+
+    border: none;
+    background: #1687ff;
+
+    color: #ffffff;
+
+    font-weight: 700;
+
+    border-radius: 8px;
+
+    padding: 0 20px;
+
+    cursor: pointer;
+}
+
+.staff-search button:hover {
+    background: #0d73df;
+}
+
+
+/* =========================================================
+   STAFF PROFILE
+   ========================================================= */
+
+.staff-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.staff-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+        135deg,
+        #1687ff,
+        #0d5fbe
+    );
+
+    border: 2px solid #2b73b0;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.staff-info {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    line-height: 1.15;
+}
+
+.staff-name {
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.staff-role {
+    color: #79a9d0;
+
+    font-size: 11px;
+
+    margin-top: 3px;
+
+    white-space: nowrap;
+}
+
+.staff-caret {
+    color: #79a9d0;
+
+    font-size: 12px;
+
+    margin-left: 4px;
+}
+
+
+/* =========================================================
+   WELCOME
+   ========================================================= */
+
+.staff-welcome-row {
+    width: 100%;
+
+    flex: 0 0 auto;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+}
+
+.staff-welcome h1 {
+    margin: 0;
+
+    font-size: 28px;
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    color: #ffffff;
+}
+
+.staff-welcome h1 span {
+    color: #1687ff;
+}
+
+.staff-welcome p {
+    margin: 6px 0 0;
+
+    color: #83b0d7;
+
+    font-size: 13px;
+}
+
+.staff-date {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    color: #ffffff;
+
+    font-size: 13px;
+}
+
+.staff-date-main {
+    text-align: center;
+
+    font-weight: 700;
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+.staff-date-sub {
+    color: #79a9d0;
+
+    font-size: 10px;
+
+    margin-top: 2px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.staff-stats-row {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    width: 100%;
+
+    flex: 0 0 auto;
+}
+
+.staff-stat-card {
+    position: relative;
+
+    background: #06192a;
+
+    border: 1px solid #1c4667;
+
+    border-radius: 12px;
+
+    padding: 16px 18px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease;
+}
+
+.staff-stat-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #2b6a95;
+}
+
+.staff-stat-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 5px;
+}
+
+.staff-stat-card.company::before {
+    background: #9b5cff;
+}
+
+.staff-stat-card.receipt::before {
+    background: #12d9b2;
+}
+
+.staff-stat-card.amount::before {
+    background: #ffae19;
+}
+
+
+.staff-stat-top {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 12px;
+}
+
+.staff-stat-icon {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+}
+
+.company .staff-stat-icon {
+    background: rgba(155, 92, 255, 0.15);
+    color: #b178ff;
+}
+
+.receipt .staff-stat-icon {
+    background: rgba(18, 217, 178, 0.15);
+    color: #12d9b2;
+}
+
+.amount .staff-stat-icon {
+    background: rgba(255, 174, 25, 0.15);
+    color: #ffae19;
+}
+
+.staff-stat-arrow {
+    color: #4ba9ff;
+
+    font-size: 15px;
+
+    margin-top: 4px;
+}
+
+.staff-stat-label {
+    color: #d4e5f4;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    margin-bottom: 4px;
+}
+
+.staff-stat-value {
+    color: #ffffff;
+
+    font-size: 27px;
+    line-height: 1;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+
+    margin-bottom: 8px;
+}
+
+.staff-stat-action {
+    color: #3ddc97;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MAIN MANAGEMENT PANEL
+   ========================================================= */
+
+.staff-management-panel {
+    width: 100%;
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    background: #06192a;
+
+    border: 1px solid #1c4667;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.staff-panel-header {
+    flex: 0 0 auto;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 16px 20px 12px;
+}
+
+.staff-panel-header-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.staff-panel-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #0a2942;
+
+    border: 1px solid #1c4667;
+
+    color: #ffffff;
+
+    font-size: 15px;
+}
+
+.staff-panel-title {
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 800;
+}
+
+.staff-panel-subtitle {
+    margin: 3px 0 0;
+
+    color: #79a9d0;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ACTION CARDS
+   ========================================================= */
+
+.staff-management-cards {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+
+    padding: 0 20px 20px;
+
+    flex: 0 0 auto;
+}
+
+.staff-management-card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    min-height: 155px;
+
+    padding: 14px 16px;
+
+    background: #071f33;
+
+    border: 1px solid #1e4e71;
+
+    border-bottom: 3px solid;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    color: #ffffff;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease;
+}
+
+.staff-management-card:hover {
+    transform: translateY(-2px);
+
+    background: #09263e;
+}
+
+.staff-management-card.company-card {
+    border-bottom-color: #9b5cff;
+}
+
+.staff-management-card.receipt-card {
+    border-bottom-color: #12d9b2;
+}
+
+.staff-management-card.search-card {
+    border-bottom-color: #1687ff;
+}
+
+
+.staff-management-card-top {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    margin-bottom: 14px;
+}
+
+.staff-management-icon {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+}
+
+.company-card .staff-management-icon {
+    background: rgba(155, 92, 255, 0.16);
+
+    color: #b178ff;
+}
+
+.receipt-card .staff-management-icon {
+    background: rgba(18, 217, 178, 0.16);
+
+    color: #12d9b2;
+}
+
+.search-card .staff-management-icon {
+    background: rgba(22, 135, 255, 0.16);
+
+    color: #4ba2ff;
+}
+
+.staff-management-arrow {
+    color: #4ba9ff;
+
+    font-size: 15px;
+
+    margin-top: 3px;
+}
+
+.staff-management-card h3 {
+    margin: 0 0 6px;
+
+    font-size: 15px;
+
+    font-weight: 800;
+
+    color: #ffffff;
+}
+
+.staff-management-card p {
+    margin: 0;
+
+    color: #7fb0d7;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   BOTTOM INFORMATION AREA
+   ========================================================= */
+
+.staff-info-panel {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    margin: 0 20px 20px;
+
+    padding: 14px 16px;
+
+    background: #071f33;
+
+    border: 1px solid #1e4e71;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+}
+
+.staff-info-content {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+.staff-info-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+
+    border-radius: 10px;
+
+    background: rgba(22, 135, 255, 0.15);
+
+    color: #4ba2ff;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 17px;
+}
+
+.staff-info-title {
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    margin-bottom: 3px;
+}
+
+.staff-info-text {
+    color: #79a9d0;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   LAPTOP HEIGHT
+   ========================================================= */
+
+@media (max-height: 820px) {
+
+    .page-content {
+        padding-top: 16px !important;
+        padding-bottom: 14px !important;
+    }
+
+    .staff-welcome h1 {
+        font-size: 25px;
+    }
+
+    .staff-stat-value {
+        font-size: 23px;
+    }
+
+    .staff-panel-header {
+        padding: 12px 16px 8px;
+    }
+
+    .staff-management-cards {
+        padding: 0 16px 16px;
+
+        gap: 10px;
+    }
+
+    .staff-management-card {
+        min-height: 135px;
+
+        padding: 12px 14px;
+    }
+
+    .staff-management-card-top {
+        margin-bottom: 10px;
+    }
+
+    .staff-info-panel {
+        margin: 0 16px 16px;
+
+        padding: 11px 14px;
+    }
+}
+
+
+/* =========================================================
+   WIDTH
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .staff-management-cards {
+        gap: 10px;
+    }
+
+    .staff-management-card {
+        padding: 13px;
+    }
+}
+
+
+/* =========================================================
+   SMALL SCREEN
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    html,
+    body {
+        overflow: auto !important;
+    }
+
+    .app-layout,
+    .app-main {
+        height: auto !important;
+        overflow: auto !important;
+    }
+
+    .page-content {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+    }
+
+    .staff-dashboard-page {
+        height: auto;
+        overflow: visible;
+    }
+
+    .staff-topbar {
+        flex-wrap: wrap;
+    }
+
+    .staff-stats-row {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .staff-management-cards {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .staff-management-panel {
+        overflow: visible;
+    }
+
+    .staff-info-panel {
+        flex: 0 0 auto;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 550px) {
+
+    .staff-stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-management-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .staff-welcome h1 {
+        font-size: 23px;
+    }
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="staff-dashboard-page">
+
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <div class="staff-topbar">
+
+        <form method="get" action="{% url 'search_receipts' %}" class="staff-search">
+
+            <div class="staff-search-icon">⌕</div>
+
+            <input
+                type="text"
+                name="q"
+                placeholder="Search companies, receipts, or more..."
+                autocomplete="off"
+            >
+
+            <button type="submit">Search</button>
+
+        </form>
+
+
+        <!-- STAFF PROFILE -->
+        <!-- NO LOGOUT HERE -->
+
+        <div class="staff-profile">
+
+            <div class="staff-avatar">
+                {{ request.user.username|first|upper }}
+            </div>
+
+            <div class="staff-info">
+
+                <div class="staff-name">
+                    {{ request.user.username }}
+                </div>
+
+                <div class="staff-role">
+                    Staff
+                </div>
+
+            </div>
+
+            <span class="staff-caret">
+                ⌄
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         WELCOME + DATE
+         ===================================================== -->
+
+    <div class="staff-welcome-row">
+
+        <div class="staff-welcome">
+
+            <h1>
+                Good morning,
+                <span>{{ request.user.username }}!</span>
+            </h1>
+
+            <p>
+                Here's what's happening with your work today.
+            </p>
+
+        </div>
+
+
+        <div class="staff-date">
+
+            <div class="staff-date-main">
+                {% now "F j, Y" %}
+            </div>
+
+            <div class="staff-date-sub">
+                {% now "l" %}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STAT CARDS
+         ===================================================== -->
+
+    <div class="staff-stats-row">
+
+
+        <!-- COMPANIES -->
+
+        <div class="staff-stat-card company">
+
+            <div class="staff-stat-top">
+
+                <div class="staff-stat-icon">
+                    🏢
+                </div>
+
+                <span class="staff-stat-arrow"></span>
+
+            </div>
+
+            <div class="staff-stat-label">
+                Companies
+            </div>
+
+            <div class="staff-stat-value">
+                {{ total_companies }}
+            </div>
+
+            <div class="staff-stat-action">
+                Manage company records
+            </div>
+
+        </div>
+
+
+        <!-- RECEIPTS -->
+
+        <div class="staff-stat-card receipt">
+
+            <div class="staff-stat-top">
+
+                <div class="staff-stat-icon">
+                    ▤
+                </div>
+
+                <span class="staff-stat-arrow"></span>
+
+            </div>
+
+            <div class="staff-stat-label">
+                Total Receipts
+            </div>
+
+            <div class="staff-stat-value">
+                {{ total_receipts }}
+            </div>
+
+            <div class="staff-stat-action">
+                Manage receipt records
+            </div>
+
+        </div>
+
+
+        <!-- TOTAL AMOUNT -->
+
+        <div class="staff-stat-card amount">
+
+            <div class="staff-stat-top">
+
+                <div class="staff-stat-icon">
+                    ₱
+                </div>
+
+                <span class="staff-stat-arrow"></span>
+
+            </div>
+
+            <div class="staff-stat-label">
+                Total Amount
+            </div>
+
+            <div class="staff-stat-value">
+                ₱{{ total_amount|floatformat:2 }}
+            </div>
+
+            <div class="staff-stat-action">
+                Total recorded amount
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         STAFF MANAGEMENT
+         ===================================================== -->
+
+    <section class="staff-management-panel">
+
+
+        <div class="staff-panel-header">
+
+            <div class="staff-panel-header-left">
+
+                <div class="staff-panel-icon">
+                    ⚙
+                </div>
+
+                <div>
+
+                    <h2 class="staff-panel-title">
+                        Staff Actions
+                    </h2>
+
+                    <p class="staff-panel-subtitle">
+                        Manage ReceiptVault companies and receipt records.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ACTION CARDS
+             ================================================= -->
+
+        <div class="staff-management-cards">
+
+
+            <!-- ADD COMPANY -->
+
+            <a href="{% url 'create_company' %}" class="staff-management-card company-card">
+
+                <div class="staff-management-card-top">
+
+                    <div class="staff-management-icon">
+                        🏢
+                    </div>
+
+                    <span class="staff-management-arrow">
+                        →
+                    </span>
+
+                </div>
+
+                <h3>
+                    Add Company
+                </h3>
+
+                <p>
+                    Create a new company record and add it to ReceiptVault.
+                </p>
+
+            </a>
+
+
+            <!-- ADD RECEIPT -->
+
+            <a href="{% url 'create_receipt' %}" class="staff-management-card receipt-card">
+
+                <div class="staff-management-card-top">
+
+                    <div class="staff-management-icon">
+                        ▤
+                    </div>
+
+                    <span class="staff-management-arrow">
+                        →
+                    </span>
+
+                </div>
+
+                <h3>
+                    Add Receipt
+                </h3>
+
+                <p>
+                    Create and save a new receipt record.
+                </p>
+
+            </a>
+
+
+            <!-- SEARCH RECEIPTS -->
+
+            <a href="{% url 'search_receipts' %}" class="staff-management-card search-card">
+
+                <div class="staff-management-card-top">
+
+                    <div class="staff-management-icon">
+                        ⌕
+                    </div>
+
+                    <span class="staff-management-arrow">
+                        →
+                    </span>
+
+                </div>
+
+                <h3>
+                    Search Receipts
+                </h3>
+
+                <p>
+                    Find companies and review their receipt records.
+                </p>
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================================
+             INFORMATION AREA
+             ================================================= -->
+
+        <div class="staff-info-panel">
+
+            <div class="staff-info-content">
+
+                <div class="staff-info-icon">
+                    ✓
+                </div>
+
+                <div>
+
+                    <div class="staff-info-title">
+                        Staff Workspace
+                    </div>
+
+                    <div class="staff-info-text">
+                        Use the tools above to manage company information
+                        and receipt records securely.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+{% endblock %}

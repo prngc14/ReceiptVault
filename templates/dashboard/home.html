@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Dashboard - ReceiptVault
+{% endblock %}
+
+
+{% block extra_style %}
+
+<style>
+    .hero {
+        background: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, .08);
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 20px;
+        transition: .3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="hero text-center mb-5">
+
+    <h1 class="display-4 fw-bold">
+        📄 ReceiptVault
+    </h1>
+
+    <p class="lead text-muted">
+        Digital Receipt Management System
+    </p>
+
+    <div class="mt-4">
+
+        <a
+            href="{% url 'search_receipts' %}"
+            class="btn btn-primary btn-lg">
+
+            View Receipts
+
+        </a>
+
+        <a
+            href="{% url 'create_receipt' %}"
+            class="btn btn-success btn-lg">
+
+            Add Receipt
+
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="row g-4">
+
+    <!-- Total Receipts -->
+    <div class="col-md-4">
+
+        <div class="card stat-card shadow">
+
+            <div class="card-body text-center">
+
+                <h5>
+                    Total Receipts
+                </h5>
+
+                <h1>
+                    {{ total_receipts }}
+                </h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Companies -->
+    <div class="col-md-4">
+
+        <div class="card stat-card shadow">
+
+            <div class="card-body text-center">
+
+                <h5>
+                    Total Companies
+                </h5>
+
+                <h1>
+                    {{ total_companies }}
+                </h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Total Amount -->
+    <div class="col-md-4">
+
+        <div class="card stat-card shadow">
+
+            <div class="card-body text-center">
+
+                <h5>
+                    Total Amount
+                </h5>
+
+                <h1>
+                    ₱{{ total_amount|floatformat:2 }}
+                </h1>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,1087 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Dashboard - ReceiptVault
+{% endblock %}
+
+{% block extra_style %}
+<style>
+
+html,
+body {
+    overflow: hidden !important;
+}
+
+.app-layout {
+    width: 100%;
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.app-main {
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.page-content {
+    height: 100vh !important;
+    min-height: 0 !important;
+    padding: 22px 30px 20px !important;
+    overflow: hidden !important;
+}
+
+.dashboard-page {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden;
+}
+
+
+.dashboard-topbar {
+    width: 100%;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+}
+
+.dashboard-search {
+    width: min(700px, 100%);
+    height: 44px;
+    display: flex;
+    align-items: center;
+    background: #06192a;
+    border: 1px solid #1b4b70;
+    border-radius: 11px;
+    padding: 3px;
+}
+
+.dashboard-search-icon {
+    width: 41px;
+    min-width: 41px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #55aaff;
+    font-size: 18px;
+}
+
+.dashboard-search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 14px;
+    padding: 9px 7px;
+}
+
+.dashboard-search input::placeholder {
+    color: #79a5ca;
+}
+
+.dashboard-search input:-webkit-autofill,
+.dashboard-search input:-webkit-autofill:hover,
+.dashboard-search input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0 1000px #06192a inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+.dashboard-search button {
+    height: 36px;
+    border: none;
+    background: #1687ff;
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0 20px;
+    cursor: pointer;
+}
+
+.dashboard-search button:hover {
+    background: #0d73df;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 0 0 auto;
+}
+
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-avatar {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1687ff, #0d5fbe);
+    border: 2px solid #2b73b0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.admin-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.15;
+}
+
+.admin-name {
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.admin-role {
+    color: #79a9d0;
+    font-size: 11px;
+    margin-top: 3px;
+    white-space: nowrap;
+}
+
+.admin-caret {
+    color: #79a9d0;
+    font-size: 12px;
+    margin-left: 4px;
+}
+
+
+.dashboard-welcome-row {
+    width: 100%;
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.dashboard-welcome h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.dashboard-welcome h1 span {
+    color: #1687ff;
+}
+
+.dashboard-welcome p {
+    margin: 6px 0 0;
+    color: #83b0d7;
+    font-size: 13px;
+}
+
+.welcome-date {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.welcome-date-text {
+    text-align: center;
+}
+
+.welcome-date-text .date-main {
+    font-weight: 700;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.welcome-date-text .date-sub {
+    color: #79a9d0;
+    font-size: 10px;
+    margin-top: 2px;
+    text-align: center;
+}
+
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    width: 100%;
+    flex: 0 0 auto;
+}
+
+.stat-card {
+    position: relative;
+    background: #06192a;
+    border: 1px solid #1c4667;
+    border-radius: 12px;
+    padding: 16px 18px;
+    overflow: hidden;
+    transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: #2b6a95;
+}
+
+.stat-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+}
+
+.stat-card.staff::before {
+    background: #1687ff;
+}
+
+.stat-card.company::before {
+    background: #9b5cff;
+}
+
+.stat-card.receipt::before {
+    background: #12d9b2;
+}
+
+.stat-card.amount::before {
+    background: #ffae19;
+}
+
+.stat-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.staff .stat-icon {
+    background: rgba(22, 135, 255, 0.15);
+    color: #4ba2ff;
+}
+
+.company .stat-icon {
+    background: rgba(155, 92, 255, 0.15);
+    color: #b178ff;
+}
+
+.receipt .stat-icon {
+    background: rgba(18, 217, 178, 0.15);
+    color: #12d9b2;
+}
+
+.amount .stat-icon {
+    background: rgba(255, 174, 25, 0.15);
+    color: #ffae19;
+}
+
+.stat-arrow {
+    color: #4ba9ff;
+    font-size: 15px;
+    margin-top: 4px;
+}
+
+.stat-label {
+    color: #d4e5f4;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    color: #ffffff;
+    font-size: 27px;
+    line-height: 1;
+    font-weight: 800;
+    white-space: nowrap;
+    margin-bottom: 8px;
+}
+
+.stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #3ddc97;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+    gap: 14px;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+}
+
+
+.management-panel,
+.activity-panel,
+.todo-panel {
+    background: #06192a;
+    border: 1px solid #1c4667;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.management-panel {
+    flex: 0 0 auto;
+    height: auto;
+}
+
+.todo-panel {
+    flex: 1 1 auto;
+}
+
+.activity-panel {
+    height: 100%;
+}
+
+.panel-header {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px 12px;
+}
+
+.panel-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.panel-header-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a2942;
+    border: 1px solid #1c4667;
+    color: #ffffff;
+    font-size: 15px;
+}
+
+.panel-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.panel-subtitle {
+    margin: 3px 0 0;
+    color: #79a9d0;
+    font-size: 11px;
+}
+
+.view-all-btn {
+    text-decoration: none;
+    color: #55aaff;
+    border: 1px solid #24577e;
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.view-all-btn:hover {
+    background: #0a2942;
+    color: #ffffff;
+}
+
+.view-all-link {
+    text-decoration: none;
+    color: #55aaff;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.view-all-link:hover {
+    color: #ffffff;
+}
+
+
+.management-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: min-content;
+    align-content: flex-start;
+    gap: 12px;
+    padding: 0 20px 20px;
+}
+
+.management-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 14px 16px;
+    background: #071f33;
+    border: 1px solid #1e4e71;
+    border-bottom: 3px solid;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #ffffff;
+    transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.management-card:hover {
+    transform: translateY(-2px);
+    background: #09263e;
+}
+
+.management-card.staff-card {
+    border-bottom-color: #1687ff;
+}
+
+.management-card.company-card {
+    border-bottom-color: #9b5cff;
+}
+
+.management-card.receipt-card {
+    border-bottom-color: #12d9b2;
+}
+
+.management-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.management-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.staff-card .management-icon {
+    background: rgba(22, 135, 255, 0.16);
+    color: #4ba2ff;
+}
+
+.company-card .management-icon {
+    background: rgba(155, 92, 255, 0.16);
+    color: #b178ff;
+}
+
+.receipt-card .management-icon {
+    background: rgba(18, 217, 178, 0.16);
+    color: #12d9b2;
+}
+
+.management-arrow {
+    color: #4ba9ff;
+    font-size: 15px;
+    margin-top: 3px;
+}
+
+.management-card h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.management-card p {
+    margin: 0;
+    color: #7fb0d7;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+
+.todo-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 0 20px 18px;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid #173b57;
+}
+
+.todo-item:last-child {
+    border-bottom: none;
+}
+
+.todo-item-link {
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.todo-item-link:hover {
+    background: #0a2740;
+}
+
+.todo-check {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    border-radius: 4px;
+    border: 1px solid #3a6d92;
+    background: transparent;
+}
+
+.todo-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.todo-title {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.todo-sub {
+    color: #69a5d5;
+    font-size: 11px;
+}
+
+.todo-priority {
+    flex: 0 0 auto;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.todo-priority.high {
+    background: rgba(255, 59, 59, 0.15);
+    color: #ff6b6b;
+}
+
+.todo-priority.medium {
+    background: rgba(255, 174, 25, 0.15);
+    color: #ffae19;
+}
+
+.todo-priority.low {
+    background: rgba(18, 217, 178, 0.15);
+    color: #12d9b2;
+}
+
+
+.activity-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 0 20px 16px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #173b57;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    min-width: 0;
+}
+
+.activity-icon {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+
+.activity-icon.receipt-bg {
+    background: rgba(18, 217, 178, 0.16);
+    color: #12d9b2;
+}
+
+.activity-icon.company-bg {
+    background: rgba(22, 135, 255, 0.16);
+    color: #4ba2ff;
+}
+
+.activity-icon.staff-bg {
+    background: rgba(155, 92, 255, 0.16);
+    color: #b178ff;
+}
+
+.activity-icon.amount-bg {
+    background: rgba(255, 174, 25, 0.16);
+    color: #ffae19;
+}
+
+.activity-content {
+    min-width: 0;
+}
+
+.activity-title {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.activity-value {
+    color: #69a5d5;
+    font-size: 11px;
+}
+
+.activity-time {
+    color: #5f8fb8;
+    font-size: 10px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+}
+
+
+@media (max-height: 820px) {
+
+    .page-content {
+        padding-top: 16px !important;
+        padding-bottom: 14px !important;
+    }
+
+    .dashboard-welcome h1 {
+        font-size: 25px;
+    }
+
+    .panel-header {
+        padding: 12px 16px 8px;
+    }
+
+    .stat-value {
+        font-size: 23px;
+    }
+
+    .management-cards {
+        padding: 0 16px 16px;
+        gap: 10px;
+    }
+
+    .activity-item,
+    .todo-item {
+        padding: 7px 0;
+    }
+}
+
+
+/* =========================================================
+   WIDTH
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .dashboard-grid {
+        grid-template-columns: minmax(0, 1.45fr) minmax(250px, 1fr);
+    }
+}
+
+
+@media (max-width: 850px) {
+
+    html,
+    body {
+        overflow: auto !important;
+    }
+
+    .app-layout,
+    .app-main {
+        height: auto !important;
+        overflow: auto !important;
+    }
+
+    .page-content {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+    }
+
+    .dashboard-page {
+        height: auto;
+        overflow: visible;
+    }
+
+    .dashboard-topbar {
+        flex-wrap: wrap;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .left-column,
+    .management-panel,
+    .activity-panel,
+    .todo-panel {
+        height: auto;
+    }
+
+    .management-cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .activity-list,
+    .todo-list {
+        overflow: visible;
+        display: block;
+    }
+}
+
+
+@media (max-width: 550px) {
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+
+    .management-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-welcome h1 {
+        font-size: 23px;
+    }
+}
+
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="dashboard-page">
+
+
+    <div class="dashboard-topbar">
+
+        <form method="get" action="{% url 'search_receipts' %}" class="dashboard-search">
+
+            <div class="dashboard-search-icon">⌕</div>
+
+            <input type="text" name="q" placeholder="Search companies, receipts, or more..." autocomplete="off">
+
+            <button type="submit">Search</button>
+
+        </form>
+
+
+        <div class="topbar-right">
+
+            <div class="admin-profile">
+
+                <div class="admin-avatar">{{ request.user.username|first|upper }}</div>
+
+                <div class="admin-info">
+                    <div class="admin-name">{{ request.user.username }}</div>
+                    <div class="admin-role">Administrator</div>
+                </div>
+
+                <span class="admin-caret">⌄</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="dashboard-welcome-row">
+
+        <div class="dashboard-welcome">
+            <h1>Good morning, <span>{{ request.user.username }}!</span></h1>
+            <p>Here's what's happening with your system today.</p>
+        </div>
+
+        <div class="welcome-date">
+            <div class="welcome-date-text">
+                <div class="date-main">{% now "F j, Y" %}</div>
+                <div class="date-sub">{% now "l" %}</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="stats-row">
+
+        <div class="stat-card staff">
+            <div class="stat-card-top">
+                <div class="stat-icon">👥</div>
+                <span class="stat-arrow"></span>
+            </div>
+            <div class="stat-label">Total Staff</div>
+            <div class="stat-value">{{ total_staff }}</div>
+            <div class="stat-trend">↗ +0 this month</div>
+        </div>
+
+        <div class="stat-card company">
+            <div class="stat-card-top">
+                <div class="stat-icon">🏢</div>
+                <span class="stat-arrow"></span>
+            </div>
+            <div class="stat-label">Companies</div>
+            <div class="stat-value">{{ total_companies }}</div>
+            <div class="stat-trend">↗ +1 this month</div>
+        </div>
+
+        <div class="stat-card receipt">
+            <div class="stat-card-top">
+                <div class="stat-icon">▤</div>
+                <span class="stat-arrow"></span>
+            </div>
+            <div class="stat-label">Total Receipts</div>
+            <div class="stat-value">{{ total_receipts }}</div>
+            <div class="stat-trend">↗ +2 this month</div>
+        </div>
+
+        <div class="stat-card amount">
+            <div class="stat-card-top">
+                <div class="stat-icon">₱</div>
+                <span class="stat-arrow"></span>
+            </div>
+            <div class="stat-label">Total Amount</div>
+            <div class="stat-value">₱{{ total_amount|floatformat:2 }}</div>
+            <div class="stat-trend">↗ +12% this month</div>
+        </div>
+
+    </div>
+
+    <div class="dashboard-grid">
+
+        <div class="left-column">
+
+            <section class="management-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-header-left">
+                        <div class="panel-header-icon">⚙</div>
+                        <div>
+                            <h2 class="panel-title">System Management</h2>
+                            <p class="panel-subtitle">Manage ReceiptVault records and staff.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="management-cards">
+
+                    <a href="{% url 'register_staff' %}" class="management-card staff-card">
+                        <div class="management-card-top">
+                            <div class="management-icon">👤</div>
+                            <span class="management-arrow">→</span>
+                        </div>
+                        <h3>Add Staff</h3>
+                        <p>Create a new user account with specific permissions.</p>
+                    </a>
+
+                    <a href="{% url 'company_list' %}" class="management-card company-card">
+                        <div class="management-card-top">
+                            <div class="management-icon">🏢</div>
+                            <span class="management-arrow">→</span>
+                        </div>
+                        <h3>Manage Companies</h3>
+                        <p>Add, edit or organize company information.</p>
+                    </a>
+
+                    <a href="{% url 'search_receipts' %}" class="management-card receipt-card">
+                        <div class="management-card-top">
+                            <div class="management-icon">▤</div>
+                            <span class="management-arrow">→</span>
+                        </div>
+                        <h3>Manage Receipts</h3>
+                        <p>View, edit or generate receipt records.</p>
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <section class="todo-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-header-left">
+                        <div class="panel-header-icon">☐</div>
+                        <div>
+                            <h2 class="panel-title">Pending Tasks</h2>
+                            <p class="panel-subtitle">Items that need your attention.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="todo-list">
+
+                    {% for task in pending_tasks %}
+
+                        <a href="{{ task.url }}" class="todo-item todo-item-link">
+                            <div class="todo-check"></div>
+                            <div class="todo-content">
+                                <div class="todo-title">{{ task.title }}</div>
+                                <div class="todo-sub">{{ task.subtitle }}</div>
+                            </div>
+                            <span class="todo-priority {{ task.priority }}">{{ task.priority|title }}</span>
+                        </a>
+
+                    {% empty %}
+
+                        <div class="todo-item">
+                            <div class="todo-content">
+                                <div class="todo-title">All caught up!</div>
+                                <div class="todo-sub">No pending tasks right now.</div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <section class="activity-panel">
+
+            <div class="panel-header">
+
+                <div class="panel-header-left">
+                    <div class="panel-header-icon">🕐</div>
+                    <div>
+                        <h2 class="panel-title">Recent Activity</h2>
+                        <p class="panel-subtitle">Latest system updates and actions.</p>
+                    </div>
+                </div>
+
+                <a href="{% url 'activity_log' %}" class="view-all-link">View All →</a>
+
+            </div>
+
+            <div class="activity-list">
+
+                {% for item in recent_activity %}
+
+                    <div class="activity-item">
+                        <div class="activity-left">
+                            <div class="activity-icon {{ item.icon_class }}">{{ item.icon }}</div>
+                            <div class="activity-content">
+                                <div class="activity-title">{{ item.title }}</div>
+                                <div class="activity-value">{{ item.subtitle }}</div>
+                            </div>
+                        </div>
+                        <div class="activity-time">{{ item.timestamp|timesince }} ago</div>
+                    </div>
+
+                {% empty %}
+
+                    <div class="activity-item">
+                        <div class="activity-left">
+                            <div class="activity-content">
+                                <div class="activity-title">No recent activity</div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}
