@@ -69,6 +69,8 @@ if not DEBUG:
 
 INSTALLED_APPS = [
 
+    'cloudinary_storage',
+
     'django.contrib.admin',
 
     'django.contrib.auth',
@@ -80,6 +82,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
 
     'django.contrib.staticfiles',
+
+    'cloudinary',
 
 
     # Project apps
@@ -272,3 +276,27 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # =========================================================
 
 LOGIN_URL = '/login/'
+
+
+# =========================================================
+# CLOUDINARY (media storage, used only when credentials are set)
+# =========================================================
+
+# On the server, set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and
+# CLOUDINARY_API_SECRET in the WSGI file. Locally, uploads still go to media/.
+if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
+        'API_KEY': os.environ['CLOUDINARY_API_KEY'],
+        'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
+    }
+
+    STORAGES = {
+        'default': {
+            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        },
+    }
