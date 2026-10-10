@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+import sys
 
 from pathlib import Path
 
@@ -287,10 +288,22 @@ LOGIN_URL = '/login/'
 if os.environ.get('CLOUDINARY_CLOUD_NAME'):
 
     import cloudinary
+    import cloudinary.uploader
+    import cloudinary.utils
 
     # PythonAnywhere free accounts reach the internet through this proxy.
-    # This must run before cloudinary.uploader is imported.
     cloudinary.config(api_proxy='http://proxy.server:3128')
+
+    # The SDK builds its HTTP connector when cloudinary.uploader is first
+    # imported. Rebuild it now so it picks up the proxy set above.
+    # If this fails, the reason is printed to the error log instead of
+    # crashing the whole site.
+    try:
+        cloudinary.uploader._http = cloudinary.utils.get_http_connector(
+            cloudinary.config(), cloudinary.CERT_KWARGS
+        )
+    except Exception as exc:
+        print('Cloudinary proxy setup failed:', repr(exc), file=sys.stderr)
 
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
