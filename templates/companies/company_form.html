@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Add Company - ReceiptVault
+    {% if company %}Edit Company{% else %}Add Company{% endif %} - ReceiptVault
 {% endblock %}
 
 
@@ -516,11 +516,19 @@
         <div>
 
             <h1>
-                Add New <span>Company</span>
+                {% if company %}
+                    Edit <span>Company</span>
+                {% else %}
+                    Add New <span>Company</span>
+                {% endif %}
             </h1>
 
             <p>
-                Add company information to organize your receipt records.
+                {% if company %}
+                    Update the information of this company.
+                {% else %}
+                    Add company information to organize your receipt records.
+                {% endif %}
             </p>
 
         </div>
@@ -557,6 +565,10 @@
             <form method="post" novalidate>
 
                 {% csrf_token %}
+
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
 
 
                 <!-- GENERAL FORM ERRORS -->
@@ -707,9 +719,11 @@
 
                 <div class="form-actions">
 
-                    <a href="{% url 'company_list' %}" class="btn-cancel">Cancel</a>
+                    <a href="{% if next %}{{ next }}{% else %}{% url 'company_list' %}{% endif %}" class="btn-cancel">Cancel</a>
 
-                    <button type="submit" class="btn-save">Save Company</button>
+                    <button type="submit" class="btn-save">
+                        {% if company %}Save Changes{% else %}Save Company{% endif %}
+                    </button>
 
                 </div>
 

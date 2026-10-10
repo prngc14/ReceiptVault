@@ -324,12 +324,14 @@
 
 
 <!-- ===================================== -->
-<!-- BACK -->
+<!-- BACK + EDIT -->
 <!-- ===================================== -->
 
-<div class="mb-4">
+<div class="mb-4 d-flex justify-content-between align-items-center">
 
     <a href="{% url 'search_receipts' %}" class="back-button">← Back to Companies</a>
+
+    <a href="{% url 'edit_company' company.pk %}?next={{ request.path }}" class="back-button"> Edit Company</a>
 
 </div>
 
