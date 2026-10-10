@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     search_receipts,
+    search_suggestions,
     company_receipts,
     receipt_detail,
     create_receipt,
@@ -13,6 +14,13 @@ from .views import (
 
 
 urlpatterns = [
+
+    path(
+        'search-suggestions/',
+        search_suggestions,
+        name='search_suggestions'
+    ),
+
 
     # ========================================================
     # COMPANY SEARCH / COMPANY LIST

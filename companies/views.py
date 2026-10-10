@@ -4,8 +4,11 @@ from django.shortcuts import (
     get_object_or_404,
 )
 
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from accounts.audit import describe_changes, log_activity, snapshot_instance
 from .models import Company
 from .forms import CompanyForm
 
@@ -33,6 +36,7 @@ def company_list(request):
 # CREATE COMPANY
 # ============================================================
 
+@login_required(login_url='login')
 def create_company(request):
 
     if request.method == 'POST':
@@ -41,7 +45,15 @@ def create_company(request):
 
         if form.is_valid():
 
-            form.save()
+            with transaction.atomic():
+                company = form.save()
+                log_activity(
+                    request.user,
+                    'created',
+                    'company',
+                    company.company_name,
+                    'Company record created.'
+                )
 
             return redirect(
                 'company_list'
@@ -64,6 +76,7 @@ def create_company(request):
 # EDIT COMPANY
 # ============================================================
 
+@login_required(login_url='login')
 def edit_company(request, pk):
 
     company = get_object_or_404(
@@ -88,6 +101,7 @@ def edit_company(request, pk):
 
     if request.method == 'POST':
 
+        before = snapshot_instance(company)
         form = CompanyForm(
             request.POST,
             instance=company
@@ -95,7 +109,18 @@ def edit_company(request, pk):
 
         if form.is_valid():
 
-            form.save()
+            with transaction.atomic():
+                company = form.save()
+                log_activity(
+                    request.user,
+                    'updated',
+                    'company',
+                    company.company_name,
+                    describe_changes(
+                        before,
+                        snapshot_instance(company)
+                    )
+                )
 
             return redirect(
                 next_url or 'company_list'

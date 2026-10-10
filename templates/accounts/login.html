@@ -516,7 +516,9 @@
 
         .login-title {
 
-            margin: 0;
+            margin: 8px 0 34px;
+
+            text-align: center;
 
             font-size: 35px;
 
@@ -525,22 +527,6 @@
             letter-spacing: -1.5px;
 
             color: #ffffff;
-
-        }
-
-
-        .login-description {
-
-            margin-top: 10px;
-
-            margin-bottom: 34px;
-
-            color:
-                rgba(235, 244, 248, 0.66);
-
-            font-size: 14px;
-
-            line-height: 1.65;
 
         }
 
@@ -672,6 +658,19 @@
 
         }
 
+        #password {
+
+            padding-right: 44px;
+
+        }
+
+        #password::-ms-reveal,
+        #password::-ms-clear {
+
+            display: none;
+
+        }
+
 
         .form-control::placeholder {
 
@@ -717,6 +716,64 @@
 
         }
 
+        .password-toggle {
+
+            position: absolute;
+
+            top: 50%;
+
+            right: 15px;
+
+            display: grid;
+
+            width: 20px;
+
+            height: 20px;
+
+            padding: 0;
+
+            transform: translateY(-50%);
+
+            place-items: center;
+
+            border: 0;
+
+            background: transparent;
+
+            color: rgba(125, 205, 236, 0.72);
+
+            cursor: pointer;
+
+            z-index: 2;
+
+        }
+
+
+        .password-toggle:hover,
+        .password-toggle:focus-visible {
+
+            color: #ffffff;
+
+        }
+
+
+        .password-toggle svg {
+
+            width: 15px;
+
+            height: 15px;
+
+            fill: none;
+
+            stroke: currentColor;
+
+            stroke-width: 1.8;
+
+            stroke-linecap: round;
+
+            stroke-linejoin: round;
+
+        }
 
         /* =====================================================
            LOGIN BUTTON
@@ -724,11 +781,13 @@
 
         .login-button {
 
-            width: 100%;
+            display: block;
 
-            min-height: 58px;
+            width: 96%;
 
-            margin-top: 3px;
+            min-height: 52px;
+
+            margin: 3px auto 0;
 
             border: none;
 
@@ -777,17 +836,6 @@
         .login-button:active {
 
             transform: translateY(0);
-
-        }
-
-
-        .login-arrow {
-
-            margin-left: 8px;
-
-            font-size: 18px;
-
-            vertical-align: -1px;
 
         }
 
@@ -1276,14 +1324,6 @@
                     </h2>
 
 
-                    <p class="login-description">
-
-                        Sign in to your account to continue
-                        managing your records.
-
-                    </p>
-
-
                     {% if messages %}
 
                         {% for message in messages %}
@@ -1417,6 +1457,24 @@
                                     required
                                 >
 
+                                <button
+                                    type="button"
+                                    class="password-toggle"
+                                    id="password-toggle"
+                                    aria-label="Show password"
+                                    aria-pressed="false"
+                                >
+                                    <svg
+                                        class="password-eye"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="m3 3 18 18" />
+                                        <path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a14.8 14.8 0 0 1-3.1 3.8" />
+                                        <path d="M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 4-.8" />
+                                    </svg>
+                                </button>
+
                             </div>
 
                         </div>
@@ -1430,10 +1488,6 @@
                         >
 
                             Login
-
-                            <span class="login-arrow">
-                                →
-                            </span>
 
                         </button>
 
@@ -1460,6 +1514,24 @@
     <div class="page-footer">
     </div>
 
+    <script>
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('password-toggle');
+        const passwordEye = passwordToggle.querySelector('.password-eye');
+
+        passwordToggle.addEventListener('click', () => {
+            const isPasswordVisible = passwordInput.type === 'text';
+            passwordInput.type = isPasswordVisible ? 'password' : 'text';
+            passwordEye.innerHTML = isPasswordVisible
+                ? '<path d="m3 3 18 18" /><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a14.8 14.8 0 0 1-3.1 3.8" /><path d="M6.2 6.2C3.5 8 2 12 2 12s3.6 7 10 7a10.7 10.7 0 0 0 4-.8" />'
+                : '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" />';
+            passwordToggle.setAttribute('aria-pressed', String(!isPasswordVisible));
+            passwordToggle.setAttribute(
+                'aria-label',
+                isPasswordVisible ? 'Show password' : 'Hide password'
+            );
+        });
+    </script>
 
 </body>
 

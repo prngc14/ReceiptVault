@@ -4,10 +4,16 @@ from django.shortcuts import (
     redirect,
 )
 
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.db.models import Q, F
+from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from companies.models import Company
 
+from accounts.audit import describe_changes, log_activity, snapshot_instance
 from .models import Receipt
 from .forms import ReceiptForm
 
@@ -69,6 +75,68 @@ def search_receipts(request):
             'query': query,
             'companies': companies,
             'receipts': receipts,
+        }
+    )
+
+
+# ============================================================
+# SEARCH SUGGESTIONS
+# ============================================================
+
+@require_GET
+def search_suggestions(request):
+
+    query = request.GET.get('q', '').strip()
+
+    if len(query) < 2:
+        return JsonResponse(
+            {
+                'companies': [],
+                'receipts': [],
+            }
+        )
+
+    companies = Company.objects.filter(
+        company_name__icontains=query
+    ).order_by(
+        'company_name'
+    )[:5]
+
+    receipts = Receipt.objects.select_related(
+        'company'
+    ).filter(
+        Q(receipt_number__icontains=query) |
+        Q(reference_number__icontains=query) |
+        Q(item_name__icontains=query) |
+        Q(company__company_name__icontains=query)
+    ).order_by(
+        '-receipt_date',
+        '-id'
+    )[:5]
+
+    return JsonResponse(
+        {
+            'companies': [
+                {
+                    'name': company.company_name,
+                    'url': reverse(
+                        'company_receipts',
+                        args=[company.pk]
+                    ),
+                }
+                for company in companies
+            ],
+            'receipts': [
+                {
+                    'name': receipt.receipt_number,
+                    'detail': receipt.company.company_name,
+                    'url': reverse(
+                        'receipt_detail',
+                        args=[receipt.pk]
+                    ),
+                }
+                for receipt in receipts
+            ],
         }
     )
 
@@ -178,6 +246,7 @@ def receipts_outstanding_balance(request):
 # CREATE RECEIPT
 # ============================================================
 
+@login_required(login_url='login')
 def create_receipt(request):
 
     if request.method == 'POST':
@@ -189,15 +258,25 @@ def create_receipt(request):
 
         if form.is_valid():
 
-            receipt = form.save(
-                commit=False
-            )
+            with transaction.atomic():
+                receipt = form.save(commit=False)
 
-            # Save which account created this receipt.
-            if request.user.is_authenticated:
-                receipt.created_by = request.user
+                # Save which account created this receipt.
+                if request.user.is_authenticated:
+                    receipt.created_by = request.user
 
-            receipt.save()
+                receipt.save()
+                log_activity(
+                    request.user,
+                    'created',
+                    'receipt',
+                    receipt.receipt_number,
+                    (
+                        f'Receipt created for {receipt.company.company_name}. '
+                        f'Total amount: ₱{receipt.total_amount:,.2f}; '
+                        f'amount paid: ₱{receipt.amount_paid:,.2f}.'
+                    )
+                )
 
             return redirect(
                 'receipt_detail',
@@ -221,6 +300,7 @@ def create_receipt(request):
 # UPDATE RECEIPT
 # ============================================================
 
+@login_required(login_url='login')
 def update_receipt(
     request,
     pk
@@ -233,6 +313,7 @@ def update_receipt(
 
     if request.method == 'POST':
 
+        before = snapshot_instance(receipt)
         form = ReceiptForm(
             request.POST,
             request.FILES,
@@ -243,7 +324,18 @@ def update_receipt(
 
             # created_by is not in the form, so it stays
             # as the original creator.
-            form.save()
+            with transaction.atomic():
+                receipt = form.save()
+                log_activity(
+                    request.user,
+                    'updated',
+                    'receipt',
+                    receipt.receipt_number,
+                    describe_changes(
+                        before,
+                        snapshot_instance(receipt)
+                    )
+                )
 
             return redirect(
                 'receipt_detail',
@@ -270,6 +362,7 @@ def update_receipt(
 # DELETE RECEIPT
 # ============================================================
 
+@login_required(login_url='login')
 def delete_receipt(
     request,
     pk
@@ -282,7 +375,17 @@ def delete_receipt(
 
     if request.method == 'POST':
 
-        receipt.delete()
+        receipt_label = receipt.receipt_number
+        company_name = receipt.company.company_name
+        with transaction.atomic():
+            log_activity(
+                request.user,
+                'deleted',
+                'receipt',
+                receipt_label,
+                f'Receipt for {company_name} deleted.'
+            )
+            receipt.delete()
 
         return redirect(
             'search_receipts'

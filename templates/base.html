@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,6 +19,11 @@
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link
+        href="{% static 'receipts/search_autocomplete.css' %}"
         rel="stylesheet"
     >
 
@@ -526,6 +532,12 @@
 
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<script
+    src="{% static 'receipts/search_autocomplete.js' %}"
+    data-suggestions-url="{% url 'search_suggestions' %}"
+    defer>
 </script>
 
 </body>

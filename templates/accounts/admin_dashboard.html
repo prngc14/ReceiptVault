@@ -692,6 +692,11 @@ body {
     color: #b178ff;
 }
 
+.activity-icon.account-bg {
+    background: rgba(22, 135, 255, 0.16);
+    color: #4ba2ff;
+}
+
 .activity-icon.amount-bg {
     background: rgba(255, 174, 25, 0.16);
     color: #ffae19;
@@ -1057,11 +1062,11 @@ body {
                         <div class="activity-left">
                             <div class="activity-icon {{ item.icon_class }}">{{ item.icon }}</div>
                             <div class="activity-content">
-                                <div class="activity-title">{{ item.title }}</div>
-                                <div class="activity-value">{{ item.subtitle }}</div>
+                                <div class="activity-title">{{ item.display_title }}</div>
+                                <div class="activity-value">{{ item.display_subtitle }}</div>
                             </div>
                         </div>
-                        <div class="activity-time">{{ item.timestamp|timesince }} ago</div>
+                        <div class="activity-time">{{ item.created_at|timesince }} ago</div>
                     </div>
 
                 {% empty %}

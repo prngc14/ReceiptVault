@@ -106,6 +106,16 @@ Activity Log - ReceiptVault
     color: #4ba2ff;
 }
 
+.log-icon.staff-bg {
+    background: rgba(155, 92, 255, 0.16);
+    color: #b178ff;
+}
+
+.log-icon.account-bg {
+    background: rgba(22, 135, 255, 0.16);
+    color: #4ba2ff;
+}
+
 .log-title {
     color: #ffffff;
     font-size: 13px;
@@ -118,12 +128,38 @@ Activity Log - ReceiptVault
     font-size: 12px;
 }
 
+.log-detail {
+    margin-top: 5px;
+    color: #b6c9d9;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
 .log-time {
     color: #5f8fb8;
     font-size: 11px;
     white-space: nowrap;
     flex: 0 0 auto;
     padding-top: 3px;
+}
+
+.log-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 16px;
+    color: #79a9d0;
+    font-size: 12px;
+}
+
+.log-pagination a {
+    color: #62b6ff;
+    text-decoration: none;
+}
+
+.log-pagination a:hover {
+    color: #ffffff;
 }
 
 .log-empty {
@@ -160,7 +196,7 @@ Activity Log - ReceiptVault
 
         <div>
             <h1>Activity Log</h1>
-            <p>Full history of receipts and companies added to the system.</p>
+            <p>Recorded actions by authorized users. History starts when audit logging is enabled.</p>
         </div>
 
         <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
@@ -179,13 +215,18 @@ Activity Log - ReceiptVault
                     <div class="log-icon {{ item.icon_class }}">{{ item.icon }}</div>
 
                     <div>
-                        <div class="log-title">{{ item.title }}</div>
-                        <div class="log-subtitle">{{ item.subtitle }}</div>
+                        <div class="log-title">{{ item.display_title }}</div>
+                        <div class="log-subtitle">
+                            {{ item.get_action_display }} · {{ item.record_type }}: {{ item.record_label }}
+                        </div>
+                        {% if item.details %}
+                            <div class="log-detail">{{ item.details }}</div>
+                        {% endif %}
                     </div>
 
                 </div>
 
-                <div class="log-time">{{ item.timestamp|date:"M j, Y" }} · {{ item.timestamp|time:"g:i A" }}</div>
+                <div class="log-time">{{ item.created_at|date:"M j, Y" }} · {{ item.created_at|time:"g:i A" }}</div>
 
             </div>
 
@@ -198,6 +239,18 @@ Activity Log - ReceiptVault
         {% endfor %}
 
     </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        <nav class="log-pagination" aria-label="Activity log pages">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">← Previous</a>
+            {% endif %}
+            <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+            {% endif %}
+        </nav>
+    {% endif %}
 
 </div>
 

@@ -3,13 +3,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.core.paginator import Paginator
+from django.db import transaction
 from django.db.models import Sum, Q, F
 from django.urls import reverse
-from itertools import chain
 
 
 from companies.models import Company
 from receipts.models import Receipt
+from .audit import describe_changes, log_activity
+from .models import AuditLog
 
 
 # =========================================================
@@ -50,11 +53,27 @@ def login_view(request):
                 request,
                 user
             )
+            log_activity(
+                user,
+                'login',
+                'account',
+                user.get_username(),
+                'Successful login.'
+            )
 
             if user.is_staff:
                 return redirect('admin_dashboard')
 
             return redirect('staff_dashboard')
+
+        log_activity(
+            None,
+            'failed_login',
+            'account',
+            username or 'Unknown user',
+            'Invalid username or password.',
+            actor_username=username or 'Anonymous'
+        )
 
         messages.error(
             request,
@@ -73,6 +92,15 @@ def login_view(request):
 # =========================================================
 
 def logout_view(request):
+
+    if request.user.is_authenticated:
+        log_activity(
+            request.user,
+            'logout',
+            'account',
+            request.user.get_username(),
+            'User logged out.'
+        )
 
     logout(request)
 
@@ -168,54 +196,10 @@ def _get_pending_tasks():
 # =========================================================
 
 def _get_recent_activity(limit=None):
-
-    receipt_events = [
-        {
-            'type': 'receipt',
-            'icon_class': 'receipt-bg',
-            'icon': '▤',
-            'title': 'New receipt added',
-            'subtitle': (
-                f'{r.receipt_number} — '
-                f'{r.company.company_name}'
-            ),
-            'timestamp': r.created_at,
-        }
-        for r in Receipt.objects
-        .select_related('company')
-        .order_by('-created_at')[:50]
-    ]
-
-
-    company_events = [
-        {
-            'type': 'company',
-            'icon_class': 'company-bg',
-            'icon': '🏢',
-            'title': 'New company added',
-            'subtitle': c.company_name,
-            'timestamp': c.created_at,
-        }
-        for c in Company.objects
-        .order_by('-created_at')[:50]
-    ]
-
-
-    events = sorted(
-        chain(
-            receipt_events,
-            company_events
-        ),
-        key=lambda item: item['timestamp'],
-        reverse=True
-    )
-
-
     if limit:
-        return events[:limit]
+        return AuditLog.objects.select_related('actor')[:limit]
 
-
-    return events
+    return AuditLog.objects.select_related('actor').all()
 
 
 # =========================================================
@@ -276,11 +260,17 @@ def activity_log(request):
         return redirect('staff_dashboard')
 
 
+    page_obj = Paginator(
+        _get_recent_activity(),
+        50
+    ).get_page(request.GET.get('page'))
+
     return render(
         request,
         'accounts/activity_log.html',
         {
-            'activity': _get_recent_activity(),
+            'activity': page_obj.object_list,
+            'page_obj': page_obj,
         }
     )
 
@@ -327,6 +317,7 @@ def staff_dashboard(request):
 # =========================================================
 
 @login_required(login_url='login')
+@transaction.atomic
 def register_staff(request):
 
     # =====================================================
@@ -410,6 +401,13 @@ def register_staff(request):
 
             staff_user.save()
 
+            log_activity(
+                request.user,
+                'created',
+                'staff account',
+                staff_user.username,
+                'Staff account created.'
+            )
 
             messages.success(
                 request,
@@ -558,6 +556,12 @@ def edit_staff(request, user_id):
         # PASSWORD VALIDATION
         # =================================================
 
+        staff_before = {
+            'Username': staff_user.username,
+            'Active': str(staff_user.is_active),
+        }
+        was_active = staff_user.is_active
+
         if new_password:
 
             if new_password != confirm_password:
@@ -588,8 +592,30 @@ def edit_staff(request, user_id):
         staff_user.is_staff = False
         staff_user.is_superuser = False
 
-        staff_user.save()
+        with transaction.atomic():
+            staff_user.save()
 
+            staff_after = {
+                'Username': staff_user.username,
+                'Active': str(staff_user.is_active),
+            }
+            details = describe_changes(staff_before, staff_after)
+            if new_password:
+                details = f'{details} Password changed.'
+
+            action = 'updated'
+            if was_active and not is_active:
+                action = 'deactivated'
+            elif not was_active and is_active:
+                action = 'reactivated'
+
+            log_activity(
+                request.user,
+                action,
+                'staff account',
+                staff_user.username,
+                details
+            )
 
         messages.success(
             request,
@@ -682,7 +708,15 @@ def delete_staff(request, user_id):
 
     username = staff_user.username
 
-    staff_user.delete()
+    with transaction.atomic():
+        log_activity(
+            request.user,
+            'deleted',
+            'staff account',
+            username,
+            'Staff account deleted.'
+        )
+        staff_user.delete()
 
 
     messages.success(
