@@ -286,6 +286,12 @@ LOGIN_URL = '/login/'
 # CLOUDINARY_API_SECRET in the WSGI file. Locally, uploads still go to media/.
 if os.environ.get('CLOUDINARY_CLOUD_NAME'):
 
+    import cloudinary
+
+    # PythonAnywhere free accounts reach the internet through this proxy.
+    # This must run before cloudinary.uploader is imported.
+    cloudinary.config(api_proxy='http://proxy.server:3128')
+
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': os.environ['CLOUDINARY_CLOUD_NAME'],
         'API_KEY': os.environ['CLOUDINARY_API_KEY'],
