@@ -255,6 +255,10 @@ STATICFILES_DIRS = [
 # (used by the server in production)
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Compatibility for django-cloudinary-storage's collectstatic command.
+# Static files stay on the local filesystem; only uploaded media uses Cloudinary.
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 
 # =========================================================
 # EMAIL
