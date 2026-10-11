@@ -33,6 +33,9 @@ class CompanyDeletionTests(TestCase):
             reverse('delete_company', args=[company.pk])
         )
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'class="company-delete-card"')
+        self.assertContains(response, 'Old company')
+        self.assertNotContains(response, '#06192a')
         self.assertContains(response, 'Confirm Delete')
 
         response = self.client.post(
@@ -68,6 +71,7 @@ class CompanyDeletionTests(TestCase):
             reverse('delete_company', args=[company.pk])
         )
         self.assertEqual(confirm_response.status_code, 200)
+        self.assertContains(confirm_response, 'class="company-delete-card"')
         self.assertContains(confirm_response, '1 linked receipt(s)')
         self.assertNotContains(confirm_response, 'Confirm Delete')
 

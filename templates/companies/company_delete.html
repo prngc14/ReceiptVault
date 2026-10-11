@@ -1,117 +1,157 @@
 {% extends "base.html" %}
 
-{% block title %}
-Delete Company - ReceiptVault
-{% endblock %}
+{% block title %}Delete Company - ReceiptVault{% endblock %}
 
 {% block extra_style %}
 <style>
+.company-delete-page {
+    width: 100%;
+    max-width: 520px;
+    margin: 34px auto;
+}
+
+.company-delete-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.09);
+}
+
+.company-delete-heading {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.company-delete-heading h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.company-delete-body {
+    padding: 18px 20px;
+}
+
+.company-delete-message {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.company-delete-message strong {
+    color: var(--ink);
+}
+
+.company-delete-warning {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border: 1px solid #fecdd3;
+    border-radius: 7px;
+    background: #fff1f2;
+    color: #9f1239;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.company-delete-warning.blocked {
+    border-color: #fde68a;
+    background: #fffbeb;
+    color: #854d0e;
+}
+
+.company-delete-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.company-delete-actions button,
+.company-delete-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.company-delete-confirm {
+    border-color: var(--danger) !important;
+    background: var(--danger);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.company-delete-confirm:hover {
+    background: #9f1239;
+}
+
+.company-delete-cancel {
+    background: var(--surface);
+    color: var(--ink-soft);
+}
+
+.company-delete-cancel:hover {
+    border-color: var(--ink-faint);
+    color: var(--ink);
+}
+
+@media (max-width: 600px) {
     .company-delete-page {
-        width: 100%;
-        max-width: 620px;
-        margin: 60px auto;
-        padding: 30px;
-        border: 1px solid #1c4667;
-        border-radius: 16px;
-        background: #06192a;
-        color: #f8fafc;
+        margin-top: 12px;
     }
 
-    .company-delete-page h1 {
-        margin: 0 0 14px;
-        font-size: 25px;
-        font-weight: 800;
+    .company-delete-heading,
+    .company-delete-body {
+        padding-right: 15px;
+        padding-left: 15px;
     }
-
-    .company-delete-page p {
-        color: #a9c9e6;
-        line-height: 1.6;
-    }
-
-    .company-delete-warning {
-        margin: 18px 0;
-        padding: 13px 15px;
-        border: 1px solid #7f3944;
-        border-radius: 9px;
-        background: rgba(255, 89, 101, 0.10);
-        color: #ffadb3;
-    }
-
-    .company-delete-blocked {
-        border-color: #8a672f;
-        background: rgba(255, 174, 25, 0.10);
-        color: #ffd58a;
-    }
-
-    .company-delete-actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-top: 24px;
-    }
-
-    .company-delete-actions button,
-    .company-delete-actions a {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 42px;
-        padding: 0 18px;
-        border: 1px solid transparent;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-    }
-
-    .company-delete-actions button {
-        background: #d94654;
-        color: #ffffff;
-        cursor: pointer;
-    }
-
-    .company-delete-actions button:hover {
-        background: #c63745;
-    }
-
-    .company-delete-actions a {
-        border-color: #245071;
-        background: #071e32;
-        color: #a9c9e6;
-    }
+}
 </style>
 {% endblock %}
 
 {% block content %}
-<section class="company-delete-page">
-    <h1>Delete Company</h1>
-
-    <p>
-        You are about to delete <strong>{{ company.company_name }}</strong>.
-        This cannot be undone.
-    </p>
-
-    {% if receipt_count %}
-        <div class="company-delete-warning company-delete-blocked">
-            This company has {{ receipt_count }} linked receipt(s). To preserve
-            those records, the company cannot be deleted until it has no
-            receipts.
+<section class="company-delete-page" aria-labelledby="company-delete-title">
+    <div class="company-delete-card">
+        <div class="company-delete-heading">
+            <h1 id="company-delete-title">Delete Company</h1>
         </div>
-    {% else %}
-        <div class="company-delete-warning">
-            Confirm deletion of this company. No linked receipts will be
-            deleted.
-        </div>
-    {% endif %}
 
-    <div class="company-delete-actions">
-        {% if not receipt_count %}
-            <form method="post">
-                {% csrf_token %}
-                <button type="submit">Confirm Delete</button>
-            </form>
-        {% endif %}
-        <a href="{% url 'company_list' %}">Back to Companies</a>
+        <div class="company-delete-body">
+            <p class="company-delete-message">
+                You are about to delete <strong>{{ company.company_name }}</strong>.
+                This action cannot be undone.
+            </p>
+
+            {% if receipt_count %}
+                <div class="company-delete-warning blocked">
+                    This company has {{ receipt_count }} linked receipt(s). To preserve
+                    those records, the company cannot be deleted until it has no
+                    receipts.
+                </div>
+            {% else %}
+                <div class="company-delete-warning">
+                    Confirm deletion of this company. No linked receipts will be deleted.
+                </div>
+            {% endif %}
+
+            <div class="company-delete-actions">
+                {% if not receipt_count %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="company-delete-confirm">Confirm Delete</button>
+                    </form>
+                {% endif %}
+                <a href="{% url 'company_list' %}" class="company-delete-cancel">Back to Companies</a>
+            </div>
+        </div>
     </div>
 </section>
 {% endblock %}
