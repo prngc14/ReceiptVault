@@ -74,6 +74,33 @@ Activity Log - ReceiptVault
     border-bottom: 1px solid #173b57;
 }
 
+.log-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.log-delete-form {
+    margin: 0;
+}
+
+.log-delete {
+    padding: 5px 9px;
+    border: 1px solid #fecdd3;
+    border-radius: 6px;
+    background: #fff1f2;
+    color: #be123c;
+    font-size: 11px;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+.log-delete:hover {
+    border-color: #be123c;
+    background: #ffe4e6;
+}
+
 .log-item:last-child {
     border-bottom: none;
 }
@@ -183,6 +210,58 @@ Activity Log - ReceiptVault
         padding-top: 0;
     }
 
+    .log-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+}
+
+.activity-log-header h1,
+.log-title {
+    color: #14213d;
+}
+
+.activity-log-header p,
+.log-subtitle,
+.log-time,
+.log-pagination,
+.log-empty {
+    color: #64748b;
+}
+
+.activity-log-card {
+    background: #ffffff;
+    border-color: #dfe5ef;
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.08);
+}
+
+.log-item {
+    border-bottom-color: #e2e8f0;
+}
+
+.log-detail {
+    color: #475569;
+}
+
+.back-link {
+    border-color: #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+}
+
+.back-link:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    color: #14213d;
+}
+
+.log-pagination a {
+    color: #1d4ed8;
+}
+
+.log-pagination a:hover {
+    color: #1e40af;
 }
 
 </style>
@@ -196,10 +275,7 @@ Activity Log - ReceiptVault
 
         <div>
             <h1>Activity Log</h1>
-            <p>Recorded actions by authorized users. History starts when audit logging is enabled.</p>
         </div>
-
-        <a href="{% url 'admin_dashboard' %}" class="back-link">← Back to Dashboard</a>
 
     </div>
 
@@ -226,7 +302,19 @@ Activity Log - ReceiptVault
 
                 </div>
 
-                <div class="log-time">{{ item.created_at|date:"M j, Y" }} · {{ item.created_at|time:"g:i A" }}</div>
+                <div class="log-actions">
+                    <div class="log-time">{{ item.created_at|date:"M j, Y" }} · {{ item.created_at|time:"g:i A" }}</div>
+                    <form
+                        method="post"
+                        action="{% url 'delete_activity_log_entry' item.pk %}"
+                        class="log-delete-form"
+                        onsubmit="return confirm('Delete this activity entry? A deletion record will remain in the activity history.');"
+                    >
+                        {% csrf_token %}
+                        <input type="hidden" name="page" value="{{ page_obj.number }}">
+                        <button type="submit" class="log-delete">Delete</button>
+                    </form>
+                </div>
 
             </div>
 

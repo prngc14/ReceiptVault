@@ -724,6 +724,110 @@
     }
 }
 
+.register-card,
+.staff-drawer,
+.staff-modal-card {
+    background: #ffffff;
+    border-color: #dfe5ef;
+    box-shadow: 0 15px 40px rgba(20, 33, 61, 0.10);
+}
+
+.register-card h2,
+.staff-drawer-title h2,
+.staff-modal-header h3,
+.staff-name,
+.staff-empty h3 {
+    color: #14213d;
+}
+
+.register-card .text-muted,
+.staff-drawer-title p,
+.staff-date,
+.staff-password-note,
+.staff-empty p {
+    color: #64748b !important;
+}
+
+.register-card .form-label,
+.staff-modal .form-label,
+.staff-active-row label {
+    color: #334155;
+}
+
+.register-card .form-control,
+.staff-modal .form-control {
+    background: #ffffff;
+    color: #14213d !important;
+    border-color: #cbd5e1;
+}
+
+.register-card .form-control::placeholder,
+.staff-modal .form-control::placeholder {
+    color: #64748b;
+}
+
+.register-card .form-control:focus,
+.staff-modal .form-control:focus {
+    background: #ffffff;
+    color: #14213d !important;
+}
+
+.register-card .form-control:-webkit-autofill,
+.register-card .form-control:-webkit-autofill:hover,
+.register-card .form-control:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #14213d !important;
+    caret-color: #14213d !important;
+}
+
+.staff-settings-btn,
+.staff-drawer-close,
+.staff-modal-close,
+.staff-edit-btn,
+.register-card .btn-outline-secondary {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #475569;
+}
+
+.staff-settings-btn:hover,
+.staff-drawer-close:hover,
+.staff-modal-close:hover,
+.staff-edit-btn:hover,
+.register-card .btn-outline-secondary:hover {
+    background: #eff6ff;
+    border-color: #1687ff;
+    color: #1d4ed8;
+}
+
+.staff-drawer-header,
+.staff-item,
+.staff-active-row {
+    border-color: #dfe5ef;
+}
+
+.staff-drawer-header {
+    background: #f8fafc;
+}
+
+.staff-item,
+.staff-active-row {
+    background: #ffffff;
+}
+
+.staff-item:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.staff-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+}
+
+.staff-modal .form-control {
+    border-radius: 9px;
+}
+
 </style>
 {% endblock %}
 
@@ -754,7 +858,7 @@
             </h2>
 
             <p class="text-muted mb-0">
-                Create a new ReceiptVault staff account.
+                Create a new MMC Marketing staff account.
             </p>
 
         </div>

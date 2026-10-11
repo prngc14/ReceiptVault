@@ -1,0 +1,37 @@
+<tr class="rf-row">
+
+    <td class="rf-row-number">{{ row_number }}</td>
+
+    <td class="c-qty">
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+        {{ form.quantity }}
+        {% for e in form.quantity.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+    </td>
+
+    <td class="c-unit">
+        {{ form.unit }}
+        {% for e in form.unit.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+    </td>
+
+    <td>
+        {{ form.description }}
+        {% for e in form.description.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+        {% for e in form.non_field_errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+    </td>
+
+    <td class="c-price">
+        {{ form.unit_price }}
+        {% for e in form.unit_price.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+    </td>
+
+    <td class="c-amt">
+        {{ form.amount }}
+        {% for e in form.amount.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+    </td>
+
+    <td class="c-del">
+        <span style="display: none;">{{ form.DELETE }}</span>
+        <button type="button" class="rf-del" title="Remove row" aria-label="Remove row" tabindex="-1">×</button>
+    </td>
+
+</tr>

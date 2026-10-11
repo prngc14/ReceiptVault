@@ -2,11 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Sum, Q, F
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 
 
 from companies.models import Company
@@ -22,11 +23,7 @@ from .models import AuditLog
 def login_view(request):
 
     if request.user.is_authenticated:
-
-        if request.user.is_staff:
-            return redirect('admin_dashboard')
-
-        return redirect('staff_dashboard')
+        return redirect('company_list')
 
 
     if request.method == 'POST':
@@ -61,10 +58,7 @@ def login_view(request):
                 'Successful login.'
             )
 
-            if user.is_staff:
-                return redirect('admin_dashboard')
-
-            return redirect('staff_dashboard')
+            return redirect('company_list')
 
         log_activity(
             None,
@@ -204,6 +198,7 @@ def _get_recent_activity(limit=None):
 
 # =========================================================
 # ADMIN DASHBOARD
+# Ang home page ay ang Companies list na.
 # =========================================================
 
 @login_required(login_url='login')
@@ -212,41 +207,7 @@ def admin_dashboard(request):
     if not request.user.is_staff:
         return redirect('staff_dashboard')
 
-
-    total_staff = User.objects.filter(
-        is_staff=False,
-        is_superuser=False
-    ).count()
-
-
-    total_companies = Company.objects.count()
-
-
-    total_receipts = Receipt.objects.count()
-
-
-    total_amount = (
-        Receipt.objects.aggregate(
-            total=Sum('total_amount')
-        )['total']
-        or 0
-    )
-
-
-    return render(
-        request,
-        'accounts/admin_dashboard.html',
-        {
-            'total_staff': total_staff,
-            'total_companies': total_companies,
-            'total_receipts': total_receipts,
-            'total_amount': total_amount,
-            'pending_tasks': _get_pending_tasks(),
-            'recent_activity': _get_recent_activity(
-                limit=4
-            ),
-        }
-    )
+    return redirect('company_list')
 
 
 # =========================================================
@@ -275,8 +236,41 @@ def activity_log(request):
     )
 
 
+@login_required(login_url='login')
+@require_POST
+def delete_activity_log_entry(request, log_id):
+
+    if not request.user.is_staff:
+        return redirect('staff_dashboard')
+
+    entry = get_object_or_404(AuditLog, pk=log_id)
+
+    with transaction.atomic():
+        log_activity(
+            request.user,
+            'deleted',
+            'activity log',
+            f'Entry #{entry.pk}',
+            (
+                f'Removed {entry.actor_username} {entry.action} '
+                f'{entry.record_type} "{entry.record_label}", originally '
+                f'recorded at {entry.created_at.isoformat()}.'
+            )
+        )
+        # The model blocks ordinary deletion; this path is admin-only and audited.
+        AuditLog.objects.filter(pk=entry.pk).delete()
+
+    page = request.POST.get('page', '')
+    url = reverse('activity_log')
+    if page.isdigit() and int(page) > 1:
+        url = f'{url}?page={int(page)}'
+
+    return redirect(url)
+
+
 # =========================================================
 # STAFF DASHBOARD
+# Ang home page ay ang Companies list na.
 # =========================================================
 
 @login_required(login_url='login')
@@ -285,30 +279,7 @@ def staff_dashboard(request):
     if request.user.is_staff:
         return redirect('admin_dashboard')
 
-
-    total_companies = Company.objects.count()
-
-
-    total_receipts = Receipt.objects.count()
-
-
-    total_amount = (
-        Receipt.objects.aggregate(
-            total=Sum('total_amount')
-        )['total']
-        or 0
-    )
-
-
-    return render(
-        request,
-        'accounts/staff_dashboard.html',
-        {
-            'total_companies': total_companies,
-            'total_receipts': total_receipts,
-            'total_amount': total_amount,
-        }
-    )
+    return redirect('company_list')
 
 
 # =========================================================

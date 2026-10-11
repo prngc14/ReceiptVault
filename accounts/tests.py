@@ -112,6 +112,8 @@ class AuditLogTests(TestCase):
         self.client.force_login(self.admin)
         response = self.client.get(reverse('activity_log'))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Delete this activity entry?')
+        self.assertContains(response, 'name="csrfmiddlewaretoken"')
         self.assertContains(response, 'admin123 updated receipt Receipt #002')
         self.assertContains(
             response,
@@ -124,6 +126,53 @@ class AuditLogTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'admin123 updated receipt Receipt #002')
         self.assertNotContains(response, 'Legacy company')
+
+    def test_admin_can_delete_one_activity_entry_with_a_deletion_audit_record(self):
+        entry = log_activity(
+            self.admin,
+            'updated',
+            'receipt',
+            'Receipt #002',
+            'Amount changed.'
+        )
+        self.client.force_login(self.admin)
+
+        response = self.client.post(
+            reverse('delete_activity_log_entry', args=[entry.pk]),
+            {'page': '1'}
+        )
+
+        self.assertRedirects(response, reverse('activity_log'))
+        self.assertFalse(AuditLog.objects.filter(pk=entry.pk).exists())
+        deletion_event = AuditLog.objects.get(
+            action='deleted',
+            record_type='activity log',
+            record_label=f'Entry #{entry.pk}',
+            actor=self.admin,
+        )
+        self.assertIn('admin123 updated receipt "Receipt #002"',
+                      deletion_event.details)
+
+    def test_staff_cannot_delete_activity_entries(self):
+        entry = log_activity(
+            self.admin,
+            'created',
+            'company',
+            'Acme'
+        )
+        staff_user = User.objects.create_user(
+            username='staff-delete',
+            password='test-password'
+        )
+        self.client.force_login(staff_user)
+
+        response = self.client.post(
+            reverse('delete_activity_log_entry', args=[entry.pk])
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('staff_dashboard'))
+        self.assertTrue(AuditLog.objects.filter(pk=entry.pk).exists())
 
     def test_admin_company_delete_preserves_company_with_receipts(self):
         company = Company.objects.create(company_name='Acme')

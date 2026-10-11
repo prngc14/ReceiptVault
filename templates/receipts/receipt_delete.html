@@ -1,160 +1,156 @@
 {% extends "base.html" %}
 
-{% block title %}
-    Delete Receipt - ReceiptVault
-{% endblock %}
+{% block title %}Delete Receipt - ReceiptVault{% endblock %}
 
 {% block extra_style %}
-
 <style>
-    .delete-container {
-        max-width: 700px;
-        margin: 50px auto 0;
+.delete-page {
+    width: 100%;
+    max-width: 520px;
+    margin: 34px auto;
+}
+
+.delete-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    margin-bottom: 12px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.delete-back:hover,
+.delete-cancel:hover {
+    border-color: var(--ink-faint);
+    color: var(--ink);
+}
+
+.delete-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(20, 33, 61, 0.09);
+}
+
+.delete-heading {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.delete-heading h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: 20px;
+    font-weight: 750;
+}
+
+.delete-body {
+    padding: 18px 20px;
+}
+
+.delete-warning {
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border: 1px solid #fecdd3;
+    border-radius: 7px;
+    background: #fff1f2;
+    color: #9f1239;
+    font-size: 13px;
+}
+
+.delete-question {
+    margin: 0 0 18px;
+    color: var(--ink-soft);
+    font-size: 14px;
+}
+
+.receipt-number {
+    color: var(--ink);
+    font-weight: 750;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.delete-actions button,
+.delete-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 15px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.delete-confirm {
+    border-color: var(--danger) !important;
+    background: var(--danger);
+    color: #ffffff;
+}
+
+.delete-confirm:hover {
+    background: #9f1239;
+    color: #ffffff;
+}
+
+.delete-cancel {
+    background: var(--surface);
+    color: var(--ink-soft);
+}
+
+@media (max-width: 600px) {
+    .delete-page {
+        margin-top: 12px;
     }
 
-    .delete-card {
-        border: none;
-        border-radius: 20px;
-        overflow: hidden;
-    }
-
-    .delete-header {
-        background: #dc3545;
-        color: white;
-        padding: 20px 25px;
-    }
-
-    .delete-header h2 {
-        margin: 0;
-        font-weight: 600;
-    }
-
+    .delete-heading,
     .delete-body {
-        padding: 30px;
+        padding-right: 15px;
+        padding-left: 15px;
     }
-
-    .receipt-number {
-        font-weight: 700;
-        color: #212529;
-    }
-
-    .delete-warning {
-        background: #fff3cd;
-        border: 1px solid #ffecb5;
-        color: #664d03;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 25px;
-    }
-
-    .btn-delete {
-        border-radius: 10px;
-        font-weight: 600;
-        padding: 10px 20px;
-    }
-
-    .btn-cancel {
-        border-radius: 10px;
-        font-weight: 500;
-        padding: 10px 20px;
-    }
-
-    .back-button-container {
-        max-width: 700px;
-        margin: 25px auto 0;
-    }
-
-    .back-button {
-        border-radius: 10px;
-        font-weight: 500;
-    }
+}
 </style>
-
 {% endblock %}
 
-
 {% block content %}
+<section class="delete-page" aria-labelledby="delete-title">
+    <a href="{% url 'company_receipts' receipt.company_id %}" class="delete-back">← Back</a>
 
-<!-- Back Button -->
-<div class="back-button-container">
-
-    <button
-        type="button"
-        class="btn btn-outline-secondary back-button"
-        onclick="history.back()">
-
-        ← Back
-
-    </button>
-
-</div>
-
-
-<!-- Delete Confirmation -->
-<div class="delete-container">
-
-    <div class="card shadow delete-card">
-
-        <!-- Header -->
-        <div class="delete-header">
-
-            <h2>
-                Delete Receipt
-            </h2>
-
+    <div class="delete-card">
+        <div class="delete-heading">
+            <h1 id="delete-title">Delete Receipt</h1>
         </div>
 
-
-        <!-- Body -->
         <div class="delete-body">
-
             <div class="delete-warning">
-
-                <strong>Warning:</strong>
-                This action cannot be undone.
-
+                <strong>Warning:</strong> This action cannot be undone.
             </div>
 
-
-            <p class="fs-5">
-
-                Are you sure you want to delete
-
-                <span class="receipt-number">
-                    {{ receipt.receipt_number }}
-                </span>?
-
+            <p class="delete-question">
+                Are you sure you want to delete receipt
+                <span class="receipt-number">{{ receipt.receipt_number }}</span>?
             </p>
 
-
-            <form method="post">
-
+            <form method="post" class="delete-actions">
                 {% csrf_token %}
-
-
-                <button
-                    type="submit"
-                    class="btn btn-danger btn-delete">
-
-                    Delete
-
-                </button>
-
-
-                <a
-                    href="{% url 'receipt_detail' receipt.pk %}"
-                    class="btn btn-secondary btn-cancel">
-
-                    Cancel
-
-                </a>
-
+                <button type="submit" class="delete-confirm">Delete</button>
+                <a href="{% url 'receipt_detail' receipt.pk %}" class="delete-cancel">Cancel</a>
             </form>
-
         </div>
-
     </div>
-
-</div>
-
+</section>
 {% endblock %}

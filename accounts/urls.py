@@ -5,6 +5,7 @@ from .views import (
     logout_view,
     admin_dashboard,
     activity_log,
+    delete_activity_log_entry,
     staff_dashboard,
     register_staff,
     edit_staff,
@@ -55,6 +56,11 @@ urlpatterns = [
         'admin-dashboard/activity-log/',
         activity_log,
         name='activity_log'
+    ),
+    path(
+        'admin-dashboard/activity-log/<int:log_id>/delete/',
+        delete_activity_log_entry,
+        name='delete_activity_log_entry'
     ),
 
 

@@ -1,673 +1,477 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Add Receipt - ReceiptVault
+{% if receipt %}Edit Receipt{% else %}Add Receipt{% endif %} - MMC Marketing
 {% endblock %}
 
-
 {% block extra_style %}
-
 <style>
 
-    /* =====================================================
-       BASE LAYOUT (fixed header, scroll only inside card)
-       ===================================================== */
-
-    html,
-    body {
-        overflow: hidden !important;
-    }
-
-    .app-layout {
-        width: 100%;
-        height: 100vh !important;
-        min-height: 0 !important;
-        overflow: hidden !important;
-    }
-
-    .app-main {
-        height: 100vh !important;
-        min-height: 0 !important;
-        overflow: hidden !important;
-    }
-
-    .page-content {
-        height: 100vh !important;
-        min-height: 0 !important;
-        padding: 22px 30px 20px !important;
-        overflow: hidden !important;
-    }
-
-
-    /* =====================================================
-       PAGE WRAPPER
-       ===================================================== */
-
-    .receipt-form-page {
-        width: 100%;
-        max-width: 900px;
-        height: 100%;
-        min-height: 0;
-        margin: 0 auto;
-
-        display: flex;
-        flex-direction: column;
-        gap: 14px;
-        overflow: hidden;
-    }
-
-
-    /* =====================================================
-       BACK BUTTON
-       ===================================================== */
-
-    .back-button-container {
-        flex: 0 0 auto;
-    }
-
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 36px;
-        padding: 0 16px;
-        border-radius: 9px;
-        border: 1px solid #245071;
-        background: #071e32;
-        color: #a9c9e6;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.18s ease;
-    }
-
-    .back-button:hover {
-        background: #0a2740;
-        color: #ffffff;
-        border-color: #35698f;
-    }
-
-
-    /* =====================================================
-       MAIN CARD
-       ===================================================== */
-
-    .card-custom {
-        width: 100%;
-        flex: 1 1 auto;
-        min-height: 0;
-
-        display: flex;
-        flex-direction: column;
-
-        background:
-            linear-gradient(
-                145deg,
-                #071b2d 0%,
-                #061725 100%
-            );
-
-        border: 1px solid #173f60;
-        border-radius: 18px;
-        overflow: hidden;
-
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
-    }
-
-
-    /* =====================================================
-       HEADER
-       ===================================================== */
-
-    .card-header-custom {
-        flex: 0 0 auto;
-
-        background: #081f33;
-        border-bottom: 1px solid #173f60;
-        padding: 16px 24px;
-    }
-
-    .card-header-custom h2 {
-        margin: 0;
-        color: #ffffff;
-        font-size: 18px;
-        font-weight: 700;
-    }
-
-
-    /* =====================================================
-       BODY (scrolls if content is taller than the frame)
-       ===================================================== */
-
-    .card-body-custom {
-        flex: 1 1 auto;
-        min-height: 0;
-        overflow-y: auto;
-
-        padding: 20px 24px;
-    }
-
-
-    /* =====================================================
-       SECTION
-       ===================================================== */
-
-    .form-section {
-        background: #071f33;
-        border: 1px solid #1e4e71;
-        border-radius: 12px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
-    }
-
-    .form-section-title {
-        font-size: 14px;
-        font-weight: 800;
-        margin-bottom: 12px;
-        color: #ffffff;
-    }
-
-
-    /* =====================================================
-       LABELS
-       ===================================================== */
-
-    .form-label {
-        font-weight: 600;
-        font-size: 12px;
-        color: #dcecff;
-        margin-bottom: 5px;
-    }
-
-
-    /* =====================================================
-       INPUTS
-       ===================================================== */
-
-    .form-control,
-    .form-select {
-        width: 100%;
-        min-height: 38px;
-        background: #031321;
-        color: #ffffff !important;
-        border: 1px solid #245071;
-        border-radius: 9px;
-        padding: 8px 12px;
-        font-size: 13px;
-        outline: none;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    }
-
-    .form-control::placeholder {
-        color: #557896;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #1687ff;
-        background: #041a2c;
-        box-shadow: 0 0 0 3px rgba(22, 135, 255, 0.12);
-    }
-
-    /* Fix browser autofill turning text/background dark or unreadable */
-    .form-control:-webkit-autofill,
-    .form-control:-webkit-autofill:hover,
-    .form-control:-webkit-autofill:focus {
-        -webkit-box-shadow: 0 0 0px 1000px #031321 inset !important;
-        -webkit-text-fill-color: #ffffff !important;
-        caret-color: #ffffff !important;
-        transition: background-color 9999s ease-in-out 0s;
-    }
-
-    textarea.form-control {
-        min-height: 60px;
-        resize: none;
-    }
-
-    input[type="file"].form-control {
-        padding: 7px 10px;
-    }
-
-
-    /* =====================================================
-       TOTAL BOX
-       ===================================================== */
-
-    .total-box {
-        background: #06192a;
-        border: 1px solid #1687ff;
-        border-radius: 11px;
-        padding: 12px 16px;
-        margin-top: 10px;
-    }
-
-    .total-box label {
-        font-weight: 700;
-        font-size: 12px;
-        color: #55aaff;
-    }
-
-
-    /* =====================================================
-       BUTTON
-       ===================================================== */
-
-    .btn-save {
-        width: 100%;
-        min-height: 42px;
-        border: none;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 14px;
-        background: linear-gradient(135deg, #1687ff, #126be5);
-        color: #ffffff;
-        box-shadow: 0 8px 18px rgba(0, 119, 255, 0.18);
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .btn-save:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 24px rgba(0, 119, 255, 0.28);
-        color: #ffffff;
-    }
-
-
-    /* =====================================================
-       HELP TEXT
-       ===================================================== */
-
-    .form-help {
-        font-size: 11px;
-        color: #79a9d0;
-        margin-top: 4px;
-    }
-
-
-    .text-danger {
-        color: #ff6b6b !important;
-        font-size: 11px;
-    }
-
-
-    /* =====================================================
-       LAPTOP HEIGHT
-       ===================================================== */
-
-    @media (max-height: 820px) {
-
-        .page-content {
-            padding-top: 16px !important;
-            padding-bottom: 14px !important;
-        }
-
-        .card-header-custom {
-            padding: 12px 20px;
-        }
-
-        .card-body-custom {
-            padding: 14px 20px;
-        }
-
-        .form-section {
-            padding: 12px 14px;
-            margin-bottom: 10px;
-        }
-    }
-
-
-    /* =====================================================
-       MOBILE (allow full page scroll again)
-       ===================================================== */
-
-    @media (max-width: 700px) {
-
-        html,
-        body {
-            overflow: auto !important;
-        }
-
-        .app-layout,
-        .app-main {
-            height: auto !important;
-            overflow: auto !important;
-        }
-
-        .page-content {
-            height: auto !important;
-            min-height: 100vh !important;
-            overflow: visible !important;
-            padding-left: 20px !important;
-            padding-right: 20px !important;
-        }
-
-        .receipt-form-page {
-            height: auto;
-            overflow: visible;
-        }
-
-        .card-custom {
-            height: auto;
-        }
-
-        .card-body-custom {
-            overflow: visible;
-        }
-
-    }
+.rf-page { max-width: 1180px; margin: 0 auto; }
+.rf-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.rf-head h1 { margin: 0; color: var(--ink); font-size: 24px; font-weight: 750; }
+.rf-sheet { background: var(--surface); border: 1px solid #cbd3df; border-radius: 10px; overflow: hidden; }
+.rf-meta { display: grid; grid-template-columns: minmax(220px, 1.6fr) minmax(130px, .55fr) minmax(150px, .75fr); }
+.rf-meta.second { grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+.rf-meta-field { min-width: 0; padding: 7px 10px 9px; border-right: 1px solid var(--line); }
+.rf-meta-field:last-child { border-right: 0; }
+.rf-meta-field label { display: block; margin-bottom: 3px; color: var(--ink-soft); font-size: 11px; }
+.rf-input { width: 100%; min-width: 0; min-height: 36px; padding: 5px 9px; background: #fff; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); font-size: 14px; }
+.rf-input:focus, .rf-cell:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-tint); }
+.rf-error { margin-top: 3px; color: var(--danger); font-size: 11px; font-weight: 600; }
+.rf-alert { margin: 10px; padding: 9px 12px; background: #fde8ee; border: 1px solid #f6c3d1; border-radius: 6px; color: var(--danger); font-size: 13px; font-weight: 600; }
+.rf-scroll { overflow-x: auto; border-top: 1px solid var(--line); }
+.rf-table { width: 100%; min-width: 700px; border-collapse: collapse; table-layout: fixed; }
+.rf-table th { padding: 7px 8px; background: #f4f6f9; border: 1px solid var(--line); color: var(--ink-soft); font-size: 11px; font-weight: 650; text-align: left; white-space: nowrap; }
+.rf-table td { height: 42px; padding: 2px; border: 1px solid var(--line); vertical-align: middle; }
+.c-number { width: 38px; text-align: center !important; }
+.c-qty { width: 80px; }
+.c-unit { width: 82px; }
+.c-desc { width: auto; }
+.c-price { width: 130px; }
+.c-amt { width: 135px; }
+.c-del { width: 34px; text-align: center; }
+.rf-row-number { color: var(--ink-faint); font-size: 11px; text-align: center; }
+.rf-cell { width: 100%; height: 36px; padding: 5px 7px; background: #fff; border: 1px solid transparent; border-radius: 4px; color: var(--ink); font-size: 13px; }
+.rf-amount { background: #f8fafc; font-weight: 650; text-align: right; }
+.rf-amount.rf-bad { background: #fff4e0; border-color: #f0b44c; }
+.rf-del { width: 28px; height: 28px; border: 0; border-radius: 4px; background: transparent; color: var(--ink-faint); font-size: 18px; line-height: 1; cursor: pointer; }
+.rf-del:hover { background: #fde8ee; color: var(--danger); }
+.rf-bottom { display: block; border-top: 1px solid var(--line); }
+.rf-summary { min-width: 0; }
+.rf-total-line { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(150px, .9fr); min-height: 37px; border-bottom: 1px solid var(--line); }
+.rf-total-line:last-child { border-bottom: 0; }
+.rf-total-label { display: flex; align-items: center; padding: 5px 10px; border-right: 1px solid var(--line); color: var(--ink-soft); font-size: 12px; }
+.rf-total-value { display: flex; align-items: center; justify-content: flex-end; padding: 3px 8px; color: var(--ink); font-size: 13px; font-weight: 650; }
+.rf-total-value .rf-input { height: 32px; min-height: 32px; text-align: right; }
+.rf-total-line.grand { background: #f8fafc; }
+.rf-total-line.grand .rf-total-label, .rf-total-line.grand .rf-total-value { color: var(--ink); font-weight: 750; }
+.rf-total-line.balance { background: #f8fafc; }
+.rf-total-line.balance .rf-total-value { color: var(--accent); font-weight: 750; }
+.rf-items-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 10px; border-top: 1px solid var(--line); }
+.rf-add-row { padding: 5px 9px; background: #fff; border: 1px solid var(--line); border-radius: 5px; color: var(--accent); font-size: 12px; font-weight: 650; cursor: pointer; }
+.rf-add-row:hover { background: var(--accent-tint); }
+.rf-sum { color: var(--ink-soft); font-size: 12px; }
+.rf-sum strong { margin-left: 8px; color: var(--ink); font-size: 14px; }
+.rf-hint { min-height: 20px; padding: 5px 10px; color: var(--ink-soft); font-size: 11px; }
+.rf-hint.rf-warn { color: #a16207; font-weight: 650; }
+.rf-hint.rf-ok { color: #15803d; }
+.rf-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 7px 10px; border-top: 1px solid var(--line); background: #fbfcfe; }
+.rf-tip { margin: 0; color: var(--ink-soft); font-size: 11px; }
+.rf-buttons { display: flex; flex: 0 0 auto; gap: 8px; }
+.rf-save, .rf-cancel { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 0 17px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 650; text-decoration: none; cursor: pointer; }
+.rf-save { border-color: var(--accent); background: var(--accent); color: #fff; }
+.rf-save:hover { background: var(--accent-dark); color: #fff; }
+.rf-save:disabled { opacity: .6; cursor: wait; }
+.rf-cancel:hover { border-color: var(--ink-faint); color: var(--ink); }
+@media (max-width: 760px) {
+    .rf-meta, .rf-meta.second { grid-template-columns: 1fr 1fr; }
+    .rf-meta-field:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--line); }
+    .rf-meta-field:nth-child(2) { border-right: 1px solid var(--line); }
+    .rf-footer { align-items: flex-start; flex-direction: column; }
+    .rf-buttons { align-self: flex-end; }
+}
 
 </style>
-
 {% endblock %}
 
 
 {% block content %}
 
-<div class="receipt-form-page">
+<div class="rf-page">
+<div class="rf-head">
+    <h1>{% if receipt %}Edit Receipt{% else %}Add Receipt{% endif %}</h1>
+</div>
+
+<form
+    method="post"
+    id="receiptForm"
+    data-is-edit="{% if receipt %}true{% else %}false{% endif %}"
+>
+
+    {% csrf_token %}
+    {{ formset.management_form }}
+
+    {% if form.non_field_errors or formset.non_form_errors %}
+        <div class="rf-alert">
+            {% for e in form.non_field_errors %}<div>{{ e }}</div>{% endfor %}
+            {% for e in formset.non_form_errors %}<div>{{ e }}</div>{% endfor %}
+        </div>
+    {% endif %}
 
 
-    <!-- =========================
-         BACK BUTTON
-         ========================= -->
+    <!-- ================= RECEIPT INFO ================= -->
 
-    <div class="back-button-container">
-
-        <button type="button" class="back-button" onclick="history.back()">← Back</button>
-
-    </div>
-
-
-    <!-- =========================
-         RECEIPT FORM
-         ========================= -->
-
-    <div class="card-custom">
-
-
-        <!-- HEADER -->
-
-        <div class="card-header-custom">
-            <h2>🧾 Add New Receipt</h2>
+    <div class="rf-sheet">
+        <div class="rf-meta">
+            <div class="rf-meta-field">
+                <label for="{{ form.company.id_for_label }}">{{ form.company.label }}</label>
+                {{ form.company }}
+                {% for e in form.company.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="rf-meta-field">
+                <label for="{{ form.receipt_number.id_for_label }}">{{ form.receipt_number.label }}</label>
+                {{ form.receipt_number }}
+                {% for e in form.receipt_number.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="rf-meta-field">
+                <label for="{{ form.receipt_date.id_for_label }}">{{ form.receipt_date.label }}</label>
+                {{ form.receipt_date }}
+                {% for e in form.receipt_date.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+            </div>
+        </div>
+        <div class="rf-meta second">
+            <div class="rf-meta-field">
+                <label for="{{ form.sold_to.id_for_label }}">{{ form.sold_to.label }}</label>
+                {{ form.sold_to }}
+                {% for e in form.sold_to.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="rf-meta-field">
+                <label for="{{ form.sold_to_address.id_for_label }}">{{ form.sold_to_address.label }}</label>
+                {{ form.sold_to_address }}
+                {% for e in form.sold_to_address.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+            </div>
         </div>
 
-
-        <div class="card-body-custom">
-
-            <form method="POST" enctype="multipart/form-data">
-
-                {% csrf_token %}
-
-
-                <!-- GENERAL FORM ERRORS -->
-
-                {% if form.non_field_errors %}
-
-                    <div class="text-danger mb-2">
-                        {{ form.non_field_errors }}
-                    </div>
-
-                {% endif %}
-
-
-                <!-- =========================
-                     1. RECEIPT INFORMATION
-                     ========================= -->
-
-                <div class="form-section">
-
-                    <div class="form-section-title">🧾 Receipt Information</div>
-
-                    <div class="row">
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Receipt Number</label>
-                            {{ form.receipt_number }}
-                            {% if form.receipt_number.errors %}
-                                <div class="text-danger mt-1">{{ form.receipt_number.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Reference Number</label>
-                            {{ form.reference_number }}
-                            <div class="form-help">Transaction or reference number, if available.</div>
-                            {% if form.reference_number.errors %}
-                                <div class="text-danger mt-1">{{ form.reference_number.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Company</label>
-                            {{ form.company }}
-                            {% if form.company.errors %}
-                                <div class="text-danger mt-1">{{ form.company.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Receipt Date</label>
-                            {{ form.receipt_date }}
-                            {% if form.receipt_date.errors %}
-                                <div class="text-danger mt-1">{{ form.receipt_date.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =========================
-                     2. ITEM INFORMATION
-                     ========================= -->
-
-                <div class="form-section">
-
-                    <div class="form-section-title">🛒 Item Information</div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Item / Product</label>
-                        {{ form.item_name }}
-                        <div class="form-help">Enter the item or product purchased.</div>
-                        {% if form.item_name.errors %}
-                            <div class="text-danger mt-1">{{ form.item_name.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="row">
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Quantity</label>
-                            {{ form.quantity }}
-                            {% if form.quantity.errors %}
-                                <div class="text-danger mt-1">{{ form.quantity.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Unit Price</label>
-                            {{ form.unit_price }}
-                            {% if form.unit_price.errors %}
-                                <div class="text-danger mt-1">{{ form.unit_price.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-12 mb-3">
-                            <label class="form-label">Subtotal</label>
-                            {{ form.subtotal }}
-                            <div class="form-help">Automatically calculated from Quantity × Unit Price.</div>
-                            {% if form.subtotal.errors %}
-                                <div class="text-danger mt-1">{{ form.subtotal.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- =========================
-                     3. PAYMENT & AMOUNT
-                     ========================= -->
-
-                <div class="form-section">
-
-                    <div class="form-section-title">💰 Payment & Amount</div>
-
-                    <div class="row">
-
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Discount</label>
-                            {{ form.discount }}
-                            {% if form.discount.errors %}
-                                <div class="text-danger mt-1">{{ form.discount.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Tax / VAT</label>
-                            {{ form.tax }}
-                            {% if form.tax.errors %}
-                                <div class="text-danger mt-1">{{ form.tax.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Total Amount</label>
-                            {{ form.total_amount }}
-                            {% if form.total_amount.errors %}
-                                <div class="text-danger mt-1">{{ form.total_amount.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Amount Paid</label>
-                            {{ form.amount_paid }}
-                            {% if form.amount_paid.errors %}
-                                <div class="text-danger mt-1">{{ form.amount_paid.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Payment Method</label>
-                            {{ form.payment_method }}
-                            {% if form.payment_method.errors %}
-                                <div class="text-danger mt-1">{{ form.payment_method.errors }}</div>
-                            {% endif %}
-                        </div>
-
-                    </div>
-
-
-                    <div class="total-box">
-                        <label>Total Amount</label>
-                        <div class="form-help">Total = Subtotal − Discount + Tax</div>
-                    </div>
-
-                </div>
-
-
-                <!-- =========================
-                     4. CASHIER INFORMATION
-                     ========================= -->
-
-                <div class="form-section">
-
-                    <div class="form-section-title">👤 Transaction Information</div>
-
-                    <label class="form-label">Cashier / Prepared By</label>
-                    {{ form.cashier }}
-                    {% if form.cashier.errors %}
-                        <div class="text-danger mt-1">{{ form.cashier.errors }}</div>
-                    {% endif %}
-
-                </div>
-
-
-                <!-- =========================
-                     5. ADDITIONAL INFORMATION
-                     ========================= -->
-
-                <div class="form-section">
-
-                    <div class="form-section-title">📝 Additional Information</div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Remarks</label>
-                        {{ form.remarks }}
-                        {% if form.remarks.errors %}
-                            <div class="text-danger mt-1">{{ form.remarks.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-2">
-                        <label class="form-label">Receipt Image</label>
-                        {{ form.receipt_image }}
-                        <div class="form-help">Upload a clear image of the original receipt.</div>
-                        {% if form.receipt_image.errors %}
-                            <div class="text-danger mt-1">{{ form.receipt_image.errors }}</div>
-                        {% endif %}
-                    </div>
-
-                </div>
-
-
-                <!-- SAVE BUTTON -->
-
-                <button type="submit" class="btn-save">💾 Save Receipt</button>
-
-
-            </form>
-
+        <div class="rf-scroll">
+            <table class="rf-table">
+                <thead>
+                    <tr>
+                        <th class="c-number">#</th>
+                        <th class="c-qty">Qty</th>
+                        <th class="c-unit">Unit</th>
+                        <th class="c-desc">Articles &amp; description</th>
+                        <th class="c-price">Unit price</th>
+                        <th class="c-amt">Amount</th>
+                        <th class="c-del"></th>
+                    </tr>
+                </thead>
+                <tbody id="itemRows">
+                    {% for f in formset %}
+                        {% include "receipts/_item_row.html" with form=f row_number=forloop.counter %}
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
-    </div>
+        <template id="emptyRow">
+            {% include "receipts/_item_row.html" with form=formset.empty_form %}
+        </template>
 
+        <datalist id="unitOptions">
+            <option value="pcs">
+            <option value="kg">
+            <option value="m">
+            <option value="box">
+            <option value="set">
+            <option value="roll">
+            <option value="pack">
+            <option value="bag">
+            <option value="pair">
+            <option value="liter">
+        </datalist>
+
+        <datalist id="descOptions">
+            {% for d in known_descriptions %}<option value="{{ d }}">{% endfor %}
+        </datalist>
+
+        <div class="rf-items-foot">
+            <button type="button" class="rf-add-row" id="addRowBtn">+ Add row</button>
+            <div class="rf-sum">Items total<strong id="itemsSum">₱0.00</strong></div>
+        </div>
+        <div class="rf-hint" id="totalHint"></div>
+        <div class="rf-bottom">
+            <div class="rf-summary">
+                <div class="rf-total-line">
+                    <div class="rf-total-label">VAT treatment</div>
+                    <div class="rf-total-value">
+                        {{ form.vat_treatment }}
+                        {% for e in form.vat_treatment.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="rf-total-line">
+                    <div class="rf-total-label">VAT amount</div>
+                    <div class="rf-total-value">
+                        {{ form.tax }}
+                        {% for e in form.tax.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="rf-total-line grand">
+                    <div class="rf-total-label">Total amount due</div>
+                    <div class="rf-total-value">
+                        {{ form.total_amount }}
+                        {% for e in form.total_amount.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="rf-total-line">
+                    <div class="rf-total-label">Amount paid</div>
+                    <div class="rf-total-value">
+                        {{ form.amount_paid }}
+                        {% for e in form.amount_paid.errors %}<div class="rf-error">{{ e }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="rf-total-line balance">
+                    <div class="rf-total-label">Balance</div>
+                    <div class="rf-total-value" id="balanceValue">₱0.00</div>
+                </div>
+            </div>
+        </div>
+        <div class="rf-footer">
+            <p class="rf-tip">Press Enter to move across cells. Amount updates automatically; Enter on the last row adds another row.</p>
+            <div class="rf-buttons">
+                <a href="{% if receipt %}{% url 'receipt_detail' receipt.pk %}{% else %}{% url 'company_list' %}{% endif %}" class="rf-cancel">Cancel</a>
+                <button type="submit" class="rf-save" id="saveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</form>
 </div>
 
 
-<!-- =========================
-     AUTOMATIC CALCULATION
-     ========================= -->
-
 <script>
+(function () {
 
-document.addEventListener("DOMContentLoaded", function () {
+    var form = document.getElementById('receiptForm');
+    var IS_EDIT = form.dataset.isEdit === 'true';
+    var body = document.getElementById('itemRows');
+    var totalForms = document.getElementById('id_items-TOTAL_FORMS');
+    var tpl = document.getElementById('emptyRow');
+    var totalInput = document.getElementById('id_total_amount');
+    var vatTreatmentInput = document.getElementById('id_vat_treatment');
+    var vatAmountInput = document.getElementById('id_tax');
+    var paidInput = document.getElementById('id_amount_paid');
+    var sumEl = document.getElementById('itemsSum');
+    var hintEl = document.getElementById('totalHint');
+    var balanceEl = document.getElementById('balanceValue');
+    var saveBtn = document.getElementById('saveBtn');
 
-    const quantity = document.getElementById("id_quantity");
-    const unitPrice = document.getElementById("id_unit_price");
-    const subtotal = document.getElementById("id_subtotal");
-    const discount = document.getElementById("id_discount");
-    const tax = document.getElementById("id_tax");
-    const total = document.getElementById("id_total_amount");
+    var ORDER = ['quantity', 'unit', 'description', 'unit_price'];
+    var HEADER_FIELDS = [
+        'id_company',
+        'id_receipt_number',
+        'id_receipt_date',
+        'id_sold_to',
+        'id_sold_to_address'
+    ];
 
-
-    function calculateReceipt() {
-
-        const qty = parseFloat(quantity.value) || 0;
-        const price = parseFloat(unitPrice.value) || 0;
-        const discountValue = parseFloat(discount.value) || 0;
-        const taxValue = parseFloat(tax.value) || 0;
-
-        const subtotalValue = qty * price;
-
-        subtotal.value = subtotalValue.toFixed(2);
-
-        const totalValue = subtotalValue - discountValue + taxValue;
-
-        total.value = Math.max(totalValue, 0).toFixed(2);
-
+    function num(v) {
+        var n = parseFloat(v);
+        return isNaN(n) ? 0 : n;
     }
 
-    quantity.addEventListener("input", calculateReceipt);
-    unitPrice.addEventListener("input", calculateReceipt);
-    discount.addEventListener("input", calculateReceipt);
-    tax.addEventListener("input", calculateReceipt);
+    function money(n) {
+        return n.toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
 
-    calculateReceipt();
+    function field(row, name) {
+        return row.querySelector('[name$="-' + name + '"]');
+    }
 
-});
+    function isHidden(row) {
+        return row.style.display === 'none';
+    }
 
+    function focusField(row, name) {
+        var el = field(row, name);
+        if (el) {
+            el.focus();
+            if (el.select) { el.select(); }
+        }
+    }
+
+    function firstVisibleRow() {
+        var rows = body.querySelectorAll('tr');
+        for (var i = 0; i < rows.length; i++) {
+            if (!isHidden(rows[i])) { return rows[i]; }
+        }
+        return null;
+    }
+
+    /* ---------- amount at mismatch ---------- */
+
+    function syncRow(row, fromAmount) {
+        var q = field(row, 'quantity');
+        var p = field(row, 'unit_price');
+        var a = field(row, 'amount');
+
+        if (!fromAmount && row.dataset.manual !== '1') {
+            if (q.value !== '' && p.value !== '') {
+                a.value = (num(q.value) * num(p.value)).toFixed(2);
+            } else {
+                a.value = '';
+            }
+        }
+
+        var mismatch = a.value !== '' && q.value !== '' && p.value !== '' &&
+            Math.abs(num(q.value) * num(p.value) - num(a.value)) > 0.005;
+
+        a.classList.toggle('rf-bad', mismatch);
+        a.title = mismatch ? 'Amount is not Qty × Unit price. Check this row.' : '';
+    }
+
+    /* ---------- totals ---------- */
+
+    function recalc() {
+        var sum = 0;
+
+        body.querySelectorAll('tr').forEach(function (row) {
+            var del = field(row, 'DELETE');
+            if (isHidden(row) || (del && del.checked)) { return; }
+            sum += num(field(row, 'amount').value);
+        });
+
+        sumEl.textContent = '₱' + money(sum);
+        var vatAmount = num(vatAmountInput.value);
+        var expectedTotal = sum + (
+            vatTreatmentInput.value === 'added' ? vatAmount : 0
+        );
+        var amountDue = totalInput.value === '' ? expectedTotal : num(totalInput.value);
+        var amountPaid = paidInput.value === '' ? amountDue : num(paidInput.value);
+        balanceEl.textContent = '₱' + money(Math.max(0, amountDue - amountPaid));
+
+        if (totalInput.value === '') {
+            hintEl.textContent = 'If left blank, the amount due will be ₱' +
+                money(expectedTotal) + (
+                    vatTreatmentInput.value === 'added'
+                        ? ' (items total plus VAT).'
+                        : ' (items total).'
+                );
+            hintEl.className = 'rf-hint';
+        } else if (Math.abs(expectedTotal - num(totalInput.value)) > 0.005) {
+            hintEl.textContent = 'Items' +
+                (vatTreatmentInput.value === 'added' ? ' plus VAT' : '') +
+                ' add up to ₱' + money(expectedTotal) +
+                ', but the amount due is ₱' + money(num(totalInput.value)) +
+                '. Check the item rows and receipt amount.';
+            hintEl.className = 'rf-hint rf-warn';
+        } else {
+            hintEl.textContent = 'Matches the items total' +
+                (vatTreatmentInput.value === 'added' ? ' plus VAT.' : '.');
+            hintEl.className = 'rf-hint rf-ok';
+        }
+    }
+
+    /* ---------- rows ---------- */
+
+    function wire(row) {
+        var q = field(row, 'quantity');
+        var p = field(row, 'unit_price');
+        var a = field(row, 'amount');
+
+        // Ang amount na hindi tugma sa Qty x Price ay itinuturing na manual.
+        if (a.value !== '' && q.value !== '' && p.value !== '' &&
+            Math.abs(num(q.value) * num(p.value) - num(a.value)) > 0.005) {
+            row.dataset.manual = '1';
+        }
+
+        a.addEventListener('input', function () {
+            row.dataset.manual = a.value === '' ? '' : '1';
+            syncRow(row, true);
+            recalc();
+        });
+
+        [q, p].forEach(function (el) {
+            el.addEventListener('input', function () {
+                syncRow(row, false);
+                recalc();
+            });
+        });
+
+        row.querySelector('.rf-del').addEventListener('click', function () {
+            var del = field(row, 'DELETE');
+            if (del) { del.checked = true; }
+            row.style.display = 'none';
+            recalc();
+        });
+
+        syncRow(row, true);
+    }
+
+    function addRow() {
+        var idx = parseInt(totalForms.value, 10);
+        var holder = document.createElement('tbody');
+
+        holder.innerHTML = tpl.innerHTML.replace(/__prefix__/g, idx).trim();
+
+        var row = holder.firstElementChild;
+        row.querySelector('.rf-row-number').textContent =
+            body.querySelectorAll('tr').length + 1;
+        body.appendChild(row);
+        totalForms.value = idx + 1;
+        wire(row);
+
+        return row;
+    }
+
+    /* ---------- keyboard (Excel-style) ---------- */
+
+    body.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') { return; }
+
+        e.preventDefault();
+
+        var row = e.target.closest('tr');
+        var name = e.target.name.split('-').pop();
+        var i = ORDER.indexOf(name);
+
+        if (i > -1 && i < ORDER.length - 1) {
+            focusField(row, ORDER[i + 1]);
+            return;
+        }
+
+        var next = row.nextElementSibling;
+        while (next && isHidden(next)) { next = next.nextElementSibling; }
+        if (!next) { next = addRow(); }
+
+        focusField(next, 'quantity');
+    });
+
+    // Enter sa taas na mga field ay hindi magsa-submit ng form.
+    form.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' || body.contains(e.target)) { return; }
+
+        var t = e.target;
+        if (!HEADER_FIELDS.includes(t.id)) { return; }
+
+        e.preventDefault();
+
+        var fieldIndex = HEADER_FIELDS.indexOf(t.id);
+        var nextHeader = document.getElementById(HEADER_FIELDS[fieldIndex + 1]);
+        if (nextHeader) {
+            nextHeader.focus();
+        } else {
+            var first = firstVisibleRow();
+            if (first) { focusField(first, 'quantity'); }
+        }
+    });
+
+    document.getElementById('addRowBtn').addEventListener('click', function () {
+        focusField(addRow(), 'quantity');
+    });
+
+    totalInput.addEventListener('input', recalc);
+    paidInput.addEventListener('input', recalc);
+    vatTreatmentInput.addEventListener('change', recalc);
+    vatAmountInput.addEventListener('input', recalc);
+
+    form.addEventListener('submit', function () {
+        saveBtn.disabled = true;
+    });
+
+    /* ---------- start ---------- */
+
+    body.querySelectorAll('tr').forEach(wire);
+    recalc();
+
+    if (!IS_EDIT) {
+        var company = document.getElementById('id_company');
+        (company.value ? document.getElementById('id_receipt_number') : company).focus();
+    }
+
+})();
 </script>
-
 
 {% endblock %}

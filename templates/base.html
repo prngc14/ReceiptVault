@@ -13,7 +13,7 @@
 
     <title>
         {% block title %}
-            ReceiptVault
+            MMC Marketing
         {% endblock %}
     </title>
 
@@ -29,6 +29,19 @@
 
     <style>
 
+        :root {
+            --ink: #14213d;
+            --ink-soft: #52607a;
+            --ink-faint: #8b97ad;
+            --accent: #1d4ed8;
+            --accent-dark: #1e40af;
+            --accent-tint: #eaf0ff;
+            --line: #dfe5ef;
+            --surface: #ffffff;
+            --page: #f4f6fb;
+            --danger: #be123c;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -42,12 +55,18 @@
         }
 
         body {
-            background: #020914;
-            color: #f8fafc;
-            font-family: Arial, Helvetica, sans-serif;
+            background: var(--page);
+            color: var(--ink);
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
 
-            /* IMPORTANT:
-               huwag hayaang mag-scroll ang buong browser page */
+            /* huwag hayaang mag-scroll ang buong browser page */
             overflow: hidden;
         }
 
@@ -58,13 +77,10 @@
 
         .app-layout {
             display: flex;
-
             width: 100%;
             height: 100vh;
             min-height: 100vh;
-
-            background: #020914;
-
+            background: var(--page);
             overflow: hidden;
         }
 
@@ -74,229 +90,145 @@
            ===================================================== */
 
         .app-sidebar {
-            width: 304px;
-            min-width: 304px;
-
+            width: 270px;
+            min-width: 270px;
             height: 100vh;
             min-height: 100vh;
-
-            background:
-                linear-gradient(
-                    180deg,
-                    #061b2d 0%,
-                    #031321 45%,
-                    #020b16 100%
-                );
-
-            border-right: 1px solid #173956;
-
-            padding: 42px 24px 28px;
-
+            background: var(--surface);
+            border-right: 1px solid var(--line);
+            padding: 34px 20px 24px;
             display: flex;
             flex-direction: column;
-
             position: fixed;
-
             left: 0;
             top: 0;
             bottom: 0;
-
             z-index: 1000;
-
-            /* SIDEBAR ITSELF DOES NOT SCROLL */
             overflow: hidden;
         }
 
-
-        /* =====================================================
-           LOGO
-           ===================================================== */
-
         .sidebar-logo {
-            margin-left: 12px;
-            margin-bottom: 4px;
-
-            font-size: 30px;
+            margin-left: 10px;
+            margin-bottom: 34px;
+            font-size: 26px;
             line-height: 1.1;
-
             font-weight: 800;
-
-            letter-spacing: -1px;
-
+            letter-spacing: -0.8px;
             flex-shrink: 0;
         }
 
-        .sidebar-logo .logo-white {
-            color: #ffffff;
+        .sidebar-logo .logo-dark {
+            color: var(--ink);
         }
 
-        .sidebar-logo .logo-blue {
-            color: #1687ff;
-        }
-
-        .sidebar-tagline {
-            margin-left: 12px;
-            margin-bottom: 36px;
-
-            color: #72a8d8;
-
-            font-size: 14px;
-
-            flex-shrink: 0;
+        .sidebar-logo .logo-accent {
+            color: var(--accent);
         }
 
 
         /* =====================================================
-           SIDEBAR NAVIGATION
+           NAVIGATION
            ===================================================== */
 
         .sidebar-nav {
             display: flex;
             flex-direction: column;
-
-            gap: 8px;
-
+            gap: 6px;
             flex-shrink: 0;
         }
 
         .sidebar-link {
             width: 100%;
-            min-height: 66px;
-
-            padding: 0 22px;
-
+            min-height: 52px;
+            padding: 0 18px;
             display: flex;
             align-items: center;
-
-            gap: 20px;
-
+            gap: 16px;
             border-radius: 12px;
-
             text-decoration: none;
-
-            color: #dcecff;
-
-            font-size: 17px;
-            font-weight: 500;
-
+            color: var(--ink-soft);
+            font-size: 15px;
+            font-weight: 600;
             transition:
                 background 0.18s ease,
-                color 0.18s ease,
-                transform 0.18s ease;
-
+                color 0.18s ease;
             flex-shrink: 0;
         }
 
         .sidebar-link:hover {
-            background: #0a2740;
-            color: #ffffff;
+            background: var(--accent-tint);
+            color: var(--accent);
         }
 
         .sidebar-link.active {
-            background:
-                linear-gradient(
-                    135deg,
-                    #1687ff,
-                    #126be5
-                );
-
+            background: var(--accent);
             color: #ffffff;
-
-            box-shadow:
-                0 10px 25px rgba(0, 119, 255, 0.20);
+            box-shadow: 0 8px 18px rgba(29, 78, 216, 0.22);
         }
 
         .sidebar-icon {
             width: 22px;
             min-width: 22px;
-
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
-
-            font-size: 18px;
-
+            font-size: 17px;
             line-height: 1;
         }
 
+        .sidebar-icon svg {
+            display: block;
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
 
-        /* =====================================================
-           DIVIDER
-           ===================================================== */
+        .sidebar-spacer {
+            flex: 1 1 auto;
+        }
 
         .sidebar-divider {
             height: 1px;
-
-            margin: 20px 4px 20px;
-
-            background: #173956;
-
+            margin: 16px 4px;
+            background: var(--line);
             flex-shrink: 0;
         }
 
-
-        /* =====================================================
-           SECURE CARD
-           ===================================================== */
-
-        .secure-card {
-            width: 100%;
-
-            min-height: 44px;
-
-            padding: 8px 12px;
-
-            border: 1px solid #215273;
-
-            border-radius: 10px;
-
-            background: #071e32;
-
+        .sidebar-user {
+            margin: 0 4px 10px;
             display: flex;
             align-items: center;
-
-            gap: 9px;
-
+            gap: 10px;
             flex-shrink: 0;
         }
 
-        .secure-icon {
-            width: 18px;
-            height: 18px;
-
-            min-width: 18px;
-
-            border-radius: 5px;
-
-            background: #087cf2;
-
+        .sidebar-avatar {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            color: #ffffff;
-
-            font-size: 10px;
-            font-weight: 400;
-
-            flex-shrink: 0;
+            background: var(--accent-tint);
+            color: var(--accent);
+            font-size: 15px;
+            font-weight: 800;
         }
 
-        .secure-text {
-            color: #ffffff;
-
-            font-size: 12px;
+        .sidebar-user-name {
+            color: var(--ink);
+            font-size: 14px;
             font-weight: 700;
-
-            white-space: nowrap;
+            line-height: 1.2;
         }
-
-
-        /* =====================================================
-           LOGOUT
-           ===================================================== */
 
         .sidebar-logout {
-            margin-top: 6px;
-
             flex-shrink: 0;
         }
 
@@ -306,17 +238,12 @@
            ===================================================== */
 
         .app-main {
-            width: calc(100% - 304px);
-
+            width: calc(100% - 270px);
             min-width: 0;
-
-            margin-left: 304px;
-
+            margin-left: 270px;
             height: 100vh;
             min-height: 100vh;
-
-            background: #020914;
-
+            background: var(--page);
             padding: 0;
 
             /* ONLY MAIN CONTENT CAN SCROLL */
@@ -324,93 +251,59 @@
             overflow-x: hidden;
         }
 
-
-        /* =====================================================
-           PAGE CONTENT
-           ===================================================== */
-
         .page-content {
             width: 100%;
-
             min-height: 100%;
-
-            padding: 42px 42px 50px;
+            padding: 36px 40px 50px;
         }
-
-
-        /* =====================================================
-           REMOVE BOOTSTRAP CONTAINER SPACE
-           ===================================================== */
 
         .page-content > .container,
         .page-content > .container-fluid {
-
             max-width: none !important;
-
             width: 100% !important;
-
             padding-left: 0 !important;
             padding-right: 0 !important;
         }
 
 
         /* =====================================================
-           MOBILE / SMALL SCREEN
+           SMALL SCREEN
            ===================================================== */
 
         @media (max-width: 1100px) {
 
             .app-sidebar {
-                width: 250px;
-                min-width: 250px;
-
-                padding-left: 18px;
-                padding-right: 18px;
+                width: 230px;
+                min-width: 230px;
+                padding-left: 14px;
+                padding-right: 14px;
             }
 
             .app-main {
-                width: calc(100% - 250px);
-
-                margin-left: 250px;
-            }
-
-            .sidebar-logo {
-                font-size: 26px;
+                width: calc(100% - 230px);
+                margin-left: 230px;
             }
 
             .sidebar-link {
-                min-height: 58px;
-
-                font-size: 16px;
-            }
-
-            .secure-text {
-                font-size: 12px;
+                min-height: 48px;
+                font-size: 14px;
             }
         }
-
 
         @media (max-width: 768px) {
 
             .app-sidebar {
-                position: fixed;
-
-                width: 220px;
-                min-width: 220px;
-
-                height: 100vh;
+                width: 200px;
+                min-width: 200px;
             }
 
             .app-main {
-                width: calc(100% - 220px);
-
-                margin-left: 220px;
-
-                height: 100vh;
+                width: calc(100% - 200px);
+                margin-left: 200px;
             }
 
             .page-content {
-                padding: 28px 22px 40px;
+                padding: 24px 18px 40px;
             }
         }
 
@@ -428,85 +321,87 @@
 
 
     <!-- =====================================================
-         FIXED SIDEBAR
+         SIDEBAR
          ===================================================== -->
 
     <aside class="app-sidebar">
 
-
-        <!-- LOGO -->
-
         <div class="sidebar-logo">
-            <span class="logo-white">Receipt</span><span class="logo-blue">Vault</span>
+            <span class="logo-dark">MMC</span>
+            <span class="logo-accent">Marketing</span>
         </div>
-
-
-        <div class="sidebar-tagline">
-            Manage. Track. Grow.
-        </div>
-
-
-        <!-- NAVIGATION -->
 
         <nav class="sidebar-nav">
 
             {% if request.user.is_authenticated %}
 
-
-                <!-- DASHBOARD -->
-
-                {% if request.user.is_staff %}
-
-                    <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"><span class="sidebar-icon">⌂</span><span>Dashboard</span></a>
-
-                {% else %}
-
-                    <a href="{% url 'staff_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %}"><span class="sidebar-icon">⌂</span><span>Dashboard</span></a>
-
-                {% endif %}
+                {% with current=request.resolver_match.url_name %}
 
 
-                <!-- COMPANIES -->
+                    <!-- COMPANIES (HOME) -->
 
-                <a href="{% url 'company_list' %}" class="sidebar-link {% if request.resolver_match.url_name == 'company_list' or request.resolver_match.url_name == 'create_company' %}active{% endif %}"><span class="sidebar-icon">▦</span><span>Companies</span></a>
+                    <a
+                        href="{% url 'company_list' %}"
+                        class="sidebar-link {% if current == 'company_list' or current == 'create_company' or current == 'edit_company' or current == 'delete_company' or current == 'company_receipts' or current == 'create_receipt' or current == 'receipt_detail' or current == 'update_receipt' or current == 'delete_receipt' or current == 'admin_dashboard' or current == 'staff_dashboard' or current == 'search_receipts' %}active{% endif %}"
+                    >
+                        <span class="sidebar-icon">▦</span>
+                        <span>Companies</span>
+                    </a>
+
+                    <!-- ADMIN ONLY -->
+
+                    {% if request.user.is_staff %}
+
+                        <a
+                            href="{% url 'register_staff' %}"
+                            class="sidebar-link {% if current == 'register_staff' %}active{% endif %}"
+                        >
+                            <span class="sidebar-icon">☺</span>
+                            <span>Staff</span>
+                        </a>
+
+                        <a
+                            href="{% url 'activity_log' %}"
+                            class="sidebar-link {% if current == 'activity_log' %}active{% endif %}"
+                        >
+                            <span class="sidebar-icon">◷</span>
+                            <span>Activity Log</span>
+                        </a>
+
+                    {% endif %}
 
 
-                <!-- RECEIPTS -->
-
-                <a href="{% url 'search_receipts' %}" class="sidebar-link {% if request.resolver_match.url_name == 'search_receipts' or request.resolver_match.url_name == 'company_receipts' or request.resolver_match.url_name == 'receipt_detail' or request.resolver_match.url_name == 'update_receipt' or request.resolver_match.url_name == 'delete_receipt' %}active{% endif %}"><span class="sidebar-icon">▤</span><span>Receipts</span></a>
-
-
-                <!-- ADD RECEIPT -->
-
-                <a href="{% url 'create_receipt' %}" class="sidebar-link {% if request.resolver_match.url_name == 'create_receipt' %}active{% endif %}"><span class="sidebar-icon">+</span><span>Add Receipt</span></a>
-
+                {% endwith %}
 
             {% endif %}
 
         </nav>
 
 
-        <!-- DIVIDER -->
+        <div class="sidebar-spacer"></div>
 
         <div class="sidebar-divider"></div>
 
 
-        <!-- SECURE CARD -->
-
-        <div class="secure-card">
-            <div class="secure-icon">✓</div>
-            <div class="secure-text">Keep your records secure</div>
-        </div>
-
-
-        <!-- LOGOUT -->
-
         {% if request.user.is_authenticated %}
 
-            <a href="{% url 'logout' %}" class="sidebar-link sidebar-logout"><span class="sidebar-icon">⇥</span><span>Logout</span></a>
+            <div class="sidebar-user">
+                <div class="sidebar-avatar">{{ request.user.username|first|upper }}</div>
+                <div class="sidebar-user-name">{{ request.user.username }}</div>
+            </div>
+
+            <a href="{% url 'logout' %}" class="sidebar-link sidebar-logout">
+                <span class="sidebar-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7" />
+                        <path d="M10 12h10" />
+                        <path d="m16 7 5 5-5 5" />
+                    </svg>
+                </span>
+                <span>Logout</span>
+            </a>
 
         {% endif %}
-
 
     </aside>
 

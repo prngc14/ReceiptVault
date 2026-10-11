@@ -8,6 +8,7 @@ from django.shortcuts import (
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Count
+from django.db.models.functions import Lower
 from django.utils.http import url_has_allowed_host_and_scheme
 
 from accounts.audit import describe_changes, log_activity, snapshot_instance
@@ -16,14 +17,18 @@ from .forms import CompanyForm
 
 
 # ============================================================
-# COMPANY LIST
+# COMPANY LIST (HOME PAGE)
+# A to Z, hindi alintana ang malaki o maliit na titik
 # ============================================================
 
+@login_required(login_url='login')
 def company_list(request):
 
     companies = Company.objects.annotate(
         receipt_count=Count('receipts')
-    ).order_by('company_name')
+    ).order_by(
+        Lower('company_name')
+    )
 
     return render(
         request,
